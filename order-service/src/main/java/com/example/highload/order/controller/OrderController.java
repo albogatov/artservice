@@ -1,8 +1,8 @@
 package com.example.highload.order.controller;
 
 import com.example.highload.order.model.inner.ClientOrder;
-import com.example.highload.model.inner.Image;
-import com.example.highload.model.network.ImageDto;
+import com.example.highload.profile.model.inner.Image;
+import com.example.highload.profile.model.network.ImageDto;
 import com.example.highload.order.model.network.OrderDto;
 import com.example.highload.order.services.ImageService;
 import com.example.highload.order.services.OrderService;

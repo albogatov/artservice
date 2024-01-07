@@ -40,6 +40,7 @@
         <module>notification-service</module>
         <module>image-service</module>
         <module>order-service</module>
+        <module>profile-service</module>
         <module>gateway</module>
     </modules>
 
