@@ -1,9 +1,9 @@
 package com.example.highload.order.controller;
 
+import com.example.highload.order.mapper.ResponseMapper;
 import com.example.highload.order.model.inner.Response;
 import com.example.highload.order.model.network.ResponseDto;
 import com.example.highload.order.services.ResponseService;
-import com.example.highload.utils.DataTransformer;
 import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ import java.util.NoSuchElementException;
 public class ResponseController {
 
     private final ResponseService responseService;
+    private final ResponseMapper responseMapper;
     private final PaginationHeadersCreator paginationHeadersCreator;
-    private final DataTransformer dataTransformer;
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@Valid @RequestBody ResponseDto data){
@@ -40,7 +40,7 @@ public class ResponseController {
     public ResponseEntity<?> getAllByOrder(@PathVariable int orderId, @PathVariable int page){
         Pageable pageable = PageRequest.of(page, 50);
         Page<Response> entityList = responseService.findAllForOrder(orderId, pageable);
-        List<ResponseDto> dtoList = dataTransformer.responseListToDto(entityList.getContent());
+        List<ResponseDto> dtoList = responseMapper.responseListToResponseDtoList(entityList.getContent());
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
@@ -50,7 +50,7 @@ public class ResponseController {
     public ResponseEntity<?> getAllByUser(@PathVariable int userId, @PathVariable int page){
         Pageable pageable = PageRequest.of(page, 50);
         Page<Response> entityList = responseService.findAllForUser(userId, pageable);
-        List<ResponseDto> dtoList = dataTransformer.responseListToDto(entityList.getContent());
+        List<ResponseDto> dtoList = responseMapper.responseListToResponseDtoList(entityList.getContent());
         HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
@@ -59,7 +59,7 @@ public class ResponseController {
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
     public ResponseEntity<?> getById(@PathVariable int id){
         Response entity = responseService.findById(id);
-        return ResponseEntity.ok(dataTransformer.responseToDto(entity));
+        return ResponseEntity.ok(responseMapper.responseToDto(entity));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

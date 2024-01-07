@@ -1,9 +1,9 @@
 package com.example.highload.order.controller;
 
+import com.example.highload.order.mapper.OrderMapper;
 import com.example.highload.order.model.inner.ClientOrder;
 import com.example.highload.order.model.network.OrderDto;
 import com.example.highload.order.services.OrderService;
-import com.example.highload.utils.DataTransformer;
 import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class OrderController {
 
     private final OrderService orderService;
     private final PaginationHeadersCreator paginationHeadersCreator;
-    private final DataTransformer dataTransformer;
+    private final OrderMapper orderMapper;
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('CLIENT')")
@@ -50,7 +50,7 @@ public class OrderController {
         Pageable pageable = PageRequest.of(page, 50);
         Page<ClientOrder> entityList = orderService.getUserOrders(userId, pageable);
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.orderListToDto(entityList.getContent()));
+        return ResponseEntity.ok().headers(responseHeaders).body(orderMapper.orderListToOrderDtoList(entityList.getContent()));
     }
 
     @GetMapping("/open/user/{userId}/{page}")
@@ -58,7 +58,7 @@ public class OrderController {
     public ResponseEntity<?> getAllUserOpenOrders(@PathVariable int userId, @PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Page<ClientOrder> entityList = orderService.getUserOpenOrders(userId, pageable);
-        List<OrderDto> dtoList = dataTransformer.orderListToDto(entityList.getContent());
+        List<OrderDto> dtoList = orderMapper.orderListToOrderDtoList(entityList.getContent());
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
@@ -67,7 +67,7 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
     public ResponseEntity<?> getById(@PathVariable int orderId) {
         ClientOrder entity = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(dataTransformer.orderToDto(entity));
+        return ResponseEntity.ok(orderMapper.orderToDto(entity));
     }
 
 
@@ -76,7 +76,7 @@ public class OrderController {
     public ResponseEntity<?> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         ClientOrder order = orderService.addTagsToOrder(tagIds, orderId);
         if (order != null) {
-            return ResponseEntity.ok(dataTransformer.orderToDto(order));
+            return ResponseEntity.ok(orderMapper.orderToDto(order));
         }
         return ResponseEntity.badRequest().body("Invalid total tag number (should be not more than 10)!");
     }
@@ -86,7 +86,7 @@ public class OrderController {
     public ResponseEntity<?> deleteTagsFromOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         ClientOrder order = orderService.deleteTagsFromOrder(tagIds, orderId);
         if (order != null) {
-            return ResponseEntity.ok(dataTransformer.orderToDto(order));
+            return ResponseEntity.ok(orderMapper.orderToDto(order));
         }
         return ResponseEntity.badRequest().body("Invalid tag ids!");
     }
@@ -97,7 +97,7 @@ public class OrderController {
         Pageable pageable = PageRequest.of(page, 50);
         Page<ClientOrder> entityList = orderService.getOrdersByTags(tags, pageable);
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.orderListToDto(entityList.getContent()));
+        return ResponseEntity.ok().headers(responseHeaders).body(orderMapper.orderListToOrderDtoList(entityList.getContent()));
     }
 
     @GetMapping("/open/tag/{page}")
@@ -106,7 +106,7 @@ public class OrderController {
         Pageable pageable = PageRequest.of(page, 50);
         Page<ClientOrder> entityList = orderService.getOpenOrdersByTags(tags, pageable);
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.orderListToDto(entityList.getContent()));
+        return ResponseEntity.ok().headers(responseHeaders).body(orderMapper.orderListToOrderDtoList(entityList.getContent()));
     }
 
     @GetMapping("/all/{page}")
@@ -114,7 +114,7 @@ public class OrderController {
     public ResponseEntity<?> getAllOrders(@PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Page<ClientOrder> entityList = orderService.getAllOrders(pageable);
-        List<OrderDto> dtoList = dataTransformer.orderListToDto(entityList.getContent());
+        List<OrderDto> dtoList = orderMapper.orderListToOrderDtoList(entityList.getContent());
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }

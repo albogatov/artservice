@@ -1,9 +1,9 @@
 package com.example.highload.order.controller;
 
+import com.example.highload.order.mapper.TagMapper;
 import com.example.highload.order.model.inner.Tag;
 import com.example.highload.order.model.network.TagDto;
 import com.example.highload.order.services.TagService;
-import com.example.highload.utils.DataTransformer;
 import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class TagController {
 
     private final TagService tagService;
     private final PaginationHeadersCreator paginationHeadersCreator;
-    private final DataTransformer dataTransformer;
+    private final TagMapper tagMapper;
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -41,7 +41,7 @@ public class TagController {
     public ResponseEntity<?> getAll(@PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Page<Tag> entityList = tagService.findAll(pageable);
-        List<TagDto> dtoList = dataTransformer.tagListToDto(entityList.getContent());
+        List<TagDto> dtoList = tagMapper.tagListToTagDtoList(entityList.getContent());
         HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
