@@ -1,5 +1,6 @@
 package com.example.highload.order.services.impl;
 
+import com.example.highload.order.mapper.OrderMapper;
 import com.example.highload.order.model.enums.OrderStatus;
 import com.example.highload.order.model.inner.ClientOrder;
 import com.example.highload.order.model.inner.Tag;
@@ -9,7 +10,6 @@ import com.example.highload.order.services.TagService;
 import com.example.highload.order.repos.OrderRepository;
 import com.example.highload.order.services.OrderService;
 import com.example.highload.order.services.TagService;
-import com.example.highload.utils.DataTransformer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,12 +26,12 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final TagService tagService;
-    private final DataTransformer dataTransformer;
+    private final OrderMapper orderMapper;
 
     @Override
     public ClientOrder saveOrder(OrderDto orderDto) {
         if (orderDto.getTags().size() > 10) return null;
-        return orderRepository.save(dataTransformer.orderFromDto(orderDto));
+        return orderRepository.save(orderMapper.orderDtoToOrder(orderDto));
     }
 
     @Override

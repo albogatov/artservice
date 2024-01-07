@@ -1,10 +1,16 @@
 package com.example.highload.image.controllers;
 
+import com.example.highload.image.model.inner.Image;
 import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.services.ImageService;
 import com.example.highload.image.services.UserService;
+import com.example.highload.notification.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,12 +27,24 @@ public class ImageObjectController {
 
     private final ImageService imageService;
     private final UserService userService;
+    private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PreAuthorize("hasAuthority('CLIENT')")
     @PostMapping("/add/order/{orderId}")
     public ResponseEntity<?> addImagesToOrder(@Valid @RequestBody List<ImageDto> imageDtos, @PathVariable int orderId) {
         imageService.saveImagesForOrder(imageDtos, orderId);
         return ResponseEntity.ok("Images added");
+    }
+
+    // TODO Move to image service
+    @GetMapping("/single/{orderId}/images/{page}")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    public ResponseEntity<?> getOrderImages(@Valid @PathVariable int orderId, @PathVariable int page) {
+        Pageable pageable = PageRequest.of(page, 50);
+        Page<Image> entityList = imageService.findAllOrderImages(orderId, pageable);
+        List<ImageDto> dtoList = dataTransformer.imageListToDto(entityList.getContent());
+        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
+        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
 
     @PreAuthorize("hasAuthority('ARTIST')")

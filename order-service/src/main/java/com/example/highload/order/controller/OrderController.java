@@ -1,10 +1,7 @@
 package com.example.highload.order.controller;
 
 import com.example.highload.order.model.inner.ClientOrder;
-import com.example.highload.profile.model.inner.Image;
-import com.example.highload.profile.model.network.ImageDto;
 import com.example.highload.order.model.network.OrderDto;
-import com.example.highload.order.services.ImageService;
 import com.example.highload.order.services.OrderService;
 import com.example.highload.utils.DataTransformer;
 import com.example.highload.order.utils.PaginationHeadersCreator;
@@ -28,7 +25,6 @@ import java.util.NoSuchElementException;
 public class OrderController {
 
     private final OrderService orderService;
-    private final ImageService imageService;
     private final PaginationHeadersCreator paginationHeadersCreator;
     private final DataTransformer dataTransformer;
 
@@ -93,16 +89,6 @@ public class OrderController {
             return ResponseEntity.ok(dataTransformer.orderToDto(order));
         }
         return ResponseEntity.badRequest().body("Invalid tag ids!");
-    }
-
-    @GetMapping("/single/{orderId}/images/{page}")
-    @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getOrderImages(@Valid @PathVariable int orderId, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Image> entityList = imageService.findAllOrderImages(orderId, pageable);
-        List<ImageDto> dtoList = dataTransformer.imageListToDto(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
 
     @GetMapping("/all/tag/{page}")
