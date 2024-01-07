@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +31,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    public ClientOrder saveOrder(OrderDto orderDto) {
-        if (orderDto.getTags().size() > 10) return null;
-        return orderRepository.save(orderMapper.orderDtoToOrder(orderDto));
+    public Mono<ClientOrder> saveOrder(OrderDto orderDto) {
+        if (orderDto.getTags().size() > 10)
+            return null;
+        return Mono.just(orderRepository.save(orderMapper.orderDtoToOrder(orderDto)));
     }
 
     @Override
@@ -45,33 +48,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ClientOrder getOrderById(int id) {
-        return orderRepository.findById(id).orElseThrow();
+    public Mono<ClientOrder> getOrderById(int id) {
+        return Mono.just(orderRepository.findById(id).orElseThrow());
     }
 
     @Override
-    public Page<ClientOrder> getUserOrders(int userId, Pageable pageable) {
-        return orderRepository.findAllByUser_Id(userId, pageable).orElse(Page.empty());
+    public Flux<ClientOrder> getUserOrders(int userId, Pageable pageable) {
+        return Flux.fromIterable(orderRepository.findAllByUser_Id(userId, pageable).orElse(Page.empty()));
     }
 
     @Override
-    public Page<ClientOrder> getUserOpenOrders(int userId, Pageable pageable) {
-        return orderRepository.findAllByUser_IdAndStatus(userId, OrderStatus.OPEN, pageable).orElse(Page.empty());
+    public Flux<ClientOrder> getUserOpenOrders(int userId, Pageable pageable) {
+        return  Flux.fromIterable(orderRepository.findAllByUser_IdAndStatus(userId, OrderStatus.OPEN, pageable).orElse(Page.empty()));
     }
 
     @Override
-    public Page<ClientOrder> getOrdersByTags(List<Integer> tagIds, Pageable pageable) {
-        return orderRepository.findAllByMultipleTagsIds(tagIds, tagIds.size(), pageable).orElse(Page.empty());
+    public Flux<ClientOrder> getOrdersByTags(List<Integer> tagIds, Pageable pageable) {
+        return Flux.fromIterable(orderRepository.findAllByMultipleTagsIds(tagIds, tagIds.size(), pageable).orElse(Page.empty()));
     }
 
     @Override
-    public Page<ClientOrder> getOpenOrdersByTags(List<Integer> tagIds, Pageable pageable) {
-        return orderRepository.findAllByMultipleTagsIdsAndStatus(tagIds, tagIds.size(), OrderStatus.OPEN.toString(), pageable).orElse(Page.empty());
+    public Flux<ClientOrder> getOpenOrdersByTags(List<Integer> tagIds, Pageable pageable) {
+        return Flux.fromIterable(orderRepository.findAllByMultipleTagsIdsAndStatus(tagIds, tagIds.size(), OrderStatus.OPEN.toString(), pageable).orElse(Page.empty()));
     }
 
     @Override
-    public Page<ClientOrder> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable);
+    public Flux<ClientOrder> getAllOrders(Pageable pageable) {
+        return Flux.fromIterable(orderRepository.findAll(pageable));
     }
 
     @Override
