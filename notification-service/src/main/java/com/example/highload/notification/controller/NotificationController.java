@@ -25,6 +25,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
     private final PaginationHeadersCreator paginationHeadersCreator;
+    // TODO Can we make in list mapping with mapper or do we need data transformer here
     private final DataTransformer dataTransformer;
 
     @PostMapping("/save")

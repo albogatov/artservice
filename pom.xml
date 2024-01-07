@@ -38,6 +38,7 @@
         <module>admin-service</module>
         <module>login-service</module>
         <module>notification-service</module>
+        <module>image-service</module>
         <module>gateway</module>
     </modules>
 

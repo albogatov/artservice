@@ -4,5 +4,5 @@ COPY pom.xml .
 RUN mvn clean package
 
 FROM openjdk:17
-COPY --from=build /target/login-service-0.0.1-SNAPSHOT.jar /target/login-service-0.0.1-SNAPSHOT.jar
+COPY --from=build /target/notification-service-0.0.1-SNAPSHOT.jar /target/notification-service-0.0.1-SNAPSHOT.jar
 ENTRYPOINT ["java","-jar","/target/notification-service-0.0.1-SNAPSHOT.jar"]
