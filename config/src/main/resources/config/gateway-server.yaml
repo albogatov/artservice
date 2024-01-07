@@ -1,0 +1,30 @@
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: login-service
+          uri: lb://login-service
+          predicates:
+            - Path=/api/auth/login, /api/auth/validate, /api/auth/get-login-from-token
+            - Method=POST
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/api/admin/**
+            - Method=POST
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**
+            - Method=POST
+eureka:
+  client:
+    serviceUrl:
+      #defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/

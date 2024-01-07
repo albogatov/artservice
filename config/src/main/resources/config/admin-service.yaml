@@ -1,0 +1,27 @@
+server:
+  port: 8182
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 50
+      connection-timeout: 6000
+    url: jdbc:postgresql://localhost:5432/highload
+    #url: jdbc:postgresql://postgres:5432/airline
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+eureka:
+  client:
+    serviceUrl:
+      #defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
+jwt:
+  secret: ${JWT_SECRET}
+  expired: ${JWT_EXPIRED}
+pagination:
+  maxSize: ${PAGINATION_MAX_SIZE}
+
