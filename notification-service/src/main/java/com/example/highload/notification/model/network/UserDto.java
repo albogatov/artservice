@@ -1,6 +1,6 @@
-package com.example.highload.model.network;
+package com.example.highload.notification.model.network;
 
-import com.example.highload.model.enums.RoleType;
+import com.example.highload.notification.model.enums.RoleType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

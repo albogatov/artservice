@@ -1,6 +1,6 @@
 package com.example.highload.model.inner;
 
-import com.example.highload.adminmodel.enums.RoleType;
+import com.example.highload.model.enums.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private String login;
 
     @OneToOne(mappedBy = "user")
-    private Profile profile;
+    private Integer profileId;
 
     @NotBlank
     @Column(name = "hash_password", nullable = false)
@@ -45,14 +45,15 @@ public class User implements UserDetails {
     @Column(name = "when_deleted_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime whenDeletedTime;
 
-    @OneToMany(mappedBy = "user")
-    private List<Response> responses;
-
-    @OneToMany(mappedBy = "user")
-    private List<ClientOrder> orders;
-
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviews;
+    // TODO Think about what to do here
+//    @OneToMany(mappedBy = "user")
+//    private List<Response> responses;
+//
+//    @OneToMany(mappedBy = "user")
+//    private List<ClientOrder> orders;
+//
+//    @OneToMany(mappedBy = "user")
+//    private List<Review> reviews;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

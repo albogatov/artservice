@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private String login;
 
     @OneToOne(mappedBy = "user")
-    private Profile profile;
+    private Integer profileId;
 
     @NotBlank
     @Column(name = "hash_password", nullable = false)
@@ -45,16 +45,6 @@ public class User implements UserDetails {
     @Column(name = "when_deleted_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime whenDeletedTime;
 
-    //TODO Remove extra entities
-
-    @OneToMany(mappedBy = "user")
-    private List<Response> responses;
-
-    @OneToMany(mappedBy = "user")
-    private List<ClientOrder> orders;
-
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviews;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

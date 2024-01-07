@@ -1,6 +1,6 @@
-package com.example.highload.admin.model.inner;
+package com.example.highload.notification.model.inner;
 
-import com.example.highload.admin.model.enums.RoleType;
+import com.example.highload.notification.model.enums.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -44,6 +44,7 @@ public class User implements UserDetails {
 
     @Column(name = "when_deleted_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime whenDeletedTime;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
