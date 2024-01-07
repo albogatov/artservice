@@ -1,6 +1,6 @@
 spring:
   application:
-    name: login-service
+    name: image-service
   cloud:
     config:
       fail-fast: true

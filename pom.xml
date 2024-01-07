@@ -39,6 +39,7 @@
         <module>login-service</module>
         <module>notification-service</module>
         <module>image-service</module>
+        <module>order-service</module>
         <module>gateway</module>
     </modules>
 
