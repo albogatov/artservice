@@ -1,6 +1,6 @@
 package com.example.highload.admin.model.inner;
 
-import com.example.highload.adminmodel.enums.RoleType;
+import com.example.highload.admin.model.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Data;
 

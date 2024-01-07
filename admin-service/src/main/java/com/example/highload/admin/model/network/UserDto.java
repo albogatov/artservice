@@ -1,6 +1,6 @@
 package com.example.highload.admin.model.network;
 
-import com.example.highload.adminmodel.enums.RoleType;
+import com.example.highload.admin.model.enums.RoleType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
