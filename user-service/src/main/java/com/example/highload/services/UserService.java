@@ -15,8 +15,6 @@ public interface UserService {
 
     User findById(int id);
 
-    User saveUser(UserDto userDto);
-
     void deactivateById(int userId);
 
     Page<User> findAllExpired(LocalDateTime dateTimeLTDelete, int page);

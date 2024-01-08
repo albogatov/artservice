@@ -9,8 +9,6 @@ public interface AdminUserService {
 
     User findById(int id);
 
-    User saveUser(UserDto userDto);
-
     User save(User user);
 
     void deleteById(Integer id);

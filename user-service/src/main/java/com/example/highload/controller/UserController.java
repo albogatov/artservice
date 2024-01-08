@@ -1,5 +1,8 @@
 package com.example.highload.controller;
 
+import com.example.highload.mapper.UserMapper;
+import com.example.highload.model.inner.User;
+import com.example.highload.model.network.UserDto;
 import com.example.highload.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import java.util.NoSuchElementException;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     //TODO Move to login service
@@ -40,6 +44,27 @@ public class UserController {
 //        }
 //        return new ResponseEntity<>("Profile already added", HttpStatus.BAD_REQUEST);
 //    }
+
+    @GetMapping("/findLogin/{login}")
+    ResponseEntity<UserDto> findByLoginElseNull(@PathVariable String login) {
+        return ResponseEntity.ok(userMapper.userToDto(userService.findByLoginElseNull(login)));
+    }
+
+    @GetMapping("/findId/{id}")
+    ResponseEntity<UserDto> findById(@PathVariable int id) {
+        return ResponseEntity.ok(userMapper.userToDto(userService.findById(id)));
+    }
+    @PostMapping("/save")
+    ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) {
+        User user = userService.save(userMapper.userDtoToUser(userDto));
+        return ResponseEntity.ok(userMapper.userToDto(user));
+    }
+
+    @PostMapping("/deleteId/{id}")
+    ResponseEntity<?> deleteUser(@PathVariable int id) {
+        userService.deleteById(id);
+        return ResponseEntity.ok("User deleted successfully");
+    }
 
     @PostMapping("/deactivate/{id}")
     public ResponseEntity<?> deactivate(@PathVariable int id) {
