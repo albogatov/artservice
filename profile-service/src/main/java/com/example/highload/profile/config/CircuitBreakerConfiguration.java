@@ -1,4 +1,4 @@
-package com.example.highload.config;
+package com.example.highload.profile.config;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;

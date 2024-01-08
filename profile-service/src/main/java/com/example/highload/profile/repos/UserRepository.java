@@ -1,6 +1,6 @@
-package com.example.highload.repos;
+package com.example.highload.profile.repos;
 
-import com.example.highload.model.inner.User;
+import com.example.highload.profile.model.inner.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

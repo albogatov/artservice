@@ -1,7 +1,7 @@
-package com.example.highload.mapper;
+package com.example.highload.profile.mapper;
 
-import com.example.highload.model.inner.User;
-import com.example.highload.model.network.UserDto;
+import com.example.highload.profile.model.inner.User;
+import com.example.highload.profile.model.network.UserDto;
 import org.mapstruct.Mapper;
 
 

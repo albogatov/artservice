@@ -1,4 +1,4 @@
-package com.example.highload.notification.utils;
+package com.example.highload.image.utils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;

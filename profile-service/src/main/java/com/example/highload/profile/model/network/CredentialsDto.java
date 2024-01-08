@@ -1,4 +1,4 @@
-package com.example.highload.model.network;
+package com.example.highload.profile.model.network;
 
 import lombok.Data;
 

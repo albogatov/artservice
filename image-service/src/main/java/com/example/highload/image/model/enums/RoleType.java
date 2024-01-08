@@ -1,4 +1,4 @@
-package com.example.highload.notification.model.enums;
+package com.example.highload.image.model.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

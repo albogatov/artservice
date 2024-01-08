@@ -1,6 +1,6 @@
-package com.example.highload.notification.advice;
+package com.example.highload.image.advice;
 
-import com.example.highload.notification.exception.base.BaseException;
+import com.example.highload.image.exception.base.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;

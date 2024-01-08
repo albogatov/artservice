@@ -1,6 +1,8 @@
-package com.example.highload.security.config;
+package com.example.highload.profile.security.config;
 
-import com.example.highload.security.filter.JwtFilter;
+import com.example.highload.profile.feign.UserServiceFeignClient;
+import com.example.highload.profile.mapper.UserMapper;
+import com.example.highload.profile.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -27,7 +30,8 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final UserServiceImpl userService;
+    private final UserServiceFeignClient userService;
+    private final UserMapper userMapper;
     private final JwtFilter jwtRequestFilter;
 
     @Bean
@@ -48,7 +52,7 @@ public class SecurityConfig {
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userService.userDetailsService());
+        daoAuthenticationProvider.setUserDetailsService(login -> userMapper.userDtoToUser(userService.findByLoginElseNull(login).getBody()));
         return daoAuthenticationProvider;
     }
 

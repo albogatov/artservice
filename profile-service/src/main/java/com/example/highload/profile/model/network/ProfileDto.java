@@ -11,6 +11,7 @@ public class ProfileDto implements Serializable {
 
     private int id;
     private int userId;
+    // TODO
     private ImageDto image;
     @NotBlank
     private String name;

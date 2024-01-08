@@ -1,5 +1,6 @@
 package com.example.highload.profile.controller;
 
+import com.example.highload.profile.feign.UserServiceFeignClient;
 import com.example.highload.profile.model.inner.Image;
 import com.example.highload.profile.model.inner.Profile;
 import com.example.highload.profile.model.network.ProfileDto;
@@ -28,7 +29,7 @@ public class ProfileAPIController {
 
     private final ProfileService profileService;
     private final ImageService imageService;
-    private final UserService userService;
+    private final UserServiceFeignClient userService;
     private final PaginationHeadersCreator paginationHeadersCreator;
     private final DataTransformer dataTransformer;
 
@@ -41,7 +42,7 @@ public class ProfileAPIController {
     @PostMapping("/edit")
     public ResponseEntity<?> edit(@Valid @RequestBody ProfileDto data) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        profileService.editProfile(data, userService.findByLoginElseNull(login).getProfile().getId());
+        profileService.editProfile(data, userService.findByLoginElseNull(login).getBody().getProfile().getId());
         return ResponseEntity.ok("Profile edited");
     }
 

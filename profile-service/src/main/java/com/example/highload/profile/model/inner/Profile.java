@@ -40,6 +40,7 @@ public class Profile {
     @Column(name = "mail", nullable = false)
     private String mail;
 
+    // TODO What here?
     @OneToMany(mappedBy = "profile", fetch = FetchType.EAGER)
     private List<ImageObject> images;
 

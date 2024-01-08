@@ -1,6 +1,6 @@
-package com.example.highload.notification.exception.base;
+package com.example.highload.image.exception.base;
 
-import com.example.highload.notification.exception.ExceptionType;
+import com.example.highload.image.exception.ExceptionType;
 import org.springframework.http.HttpStatus;
 
 

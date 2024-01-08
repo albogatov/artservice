@@ -1,7 +1,7 @@
-package com.example.highload.notification.repos;
+package com.example.highload.image.repos;
 
-import com.example.highload.notification.model.enums.RoleType;
-import com.example.highload.notification.model.inner.Role;
+import com.example.highload.image.model.enums.RoleType;
+import com.example.highload.image.model.inner.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

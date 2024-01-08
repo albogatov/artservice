@@ -1,4 +1,4 @@
-package com.example.highload.model.enums;
+package com.example.highload.profile.model.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

@@ -1,4 +1,4 @@
-package com.example.highload.feign;
+package com.example.highload.profile.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;

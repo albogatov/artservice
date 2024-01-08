@@ -1,4 +1,4 @@
-package com.example.highload.exception;
+package com.example.highload.profile.exception;
 
 
 public enum ExceptionType {

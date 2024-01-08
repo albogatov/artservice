@@ -1,4 +1,4 @@
-package com.example.highload.profile;
+package com.example.highload.profile.profile;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

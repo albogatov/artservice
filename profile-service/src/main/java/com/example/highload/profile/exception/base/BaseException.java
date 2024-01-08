@@ -1,6 +1,6 @@
-package com.example.highload.exception.base;
+package com.example.highload.profile.exception.base;
 
-import com.example.highload.exception.ExceptionType;
+import com.example.highload.profile.exception.ExceptionType;
 import org.springframework.http.HttpStatus;
 
 public abstract class BaseException extends RuntimeException {

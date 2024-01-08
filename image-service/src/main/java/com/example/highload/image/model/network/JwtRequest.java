@@ -1,4 +1,4 @@
-package com.example.highload.notification.model.network;
+package com.example.highload.image.model.network;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

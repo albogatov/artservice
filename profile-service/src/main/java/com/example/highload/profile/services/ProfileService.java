@@ -3,7 +3,7 @@ package com.example.highload.profile.services;
 import com.example.highload.profile.model.inner.Image;
 import com.example.highload.profile.model.inner.Profile;
 import com.example.highload.profile.model.network.ProfileDto;
-import com.example.highload.model.network.UserDto;
+import com.example.highload.profile.model.network.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

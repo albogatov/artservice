@@ -1,4 +1,4 @@
-package com.example.highload.notification.exception;
+package com.example.highload.image.exception;
 
 public enum ExceptionType {
     DATA(1L, "Ошибка в работе сервиса уровня сущности"),

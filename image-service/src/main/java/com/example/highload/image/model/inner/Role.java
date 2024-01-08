@@ -1,6 +1,6 @@
-package com.example.highload.notification.model.inner;
+package com.example.highload.image.model.inner;
 
-import com.example.highload.notification.model.enums.RoleType;
+import com.example.highload.image.model.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Data;
 

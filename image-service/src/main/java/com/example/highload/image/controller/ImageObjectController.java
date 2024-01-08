@@ -4,7 +4,7 @@ import com.example.highload.image.model.inner.Image;
 import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.services.ImageService;
 import com.example.highload.image.services.UserService;
-import com.example.highload.notification.utils.PaginationHeadersCreator;
+import com.example.highload.image.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,6 @@
-package com.example.highload.notification.repos;
+package com.example.highload.image.repos;
 
-import com.example.highload.notification.model.inner.User;
+import com.example.highload.image.model.inner.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

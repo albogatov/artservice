@@ -1,6 +1,8 @@
-package com.example.highload.security.filter;
+package com.example.highload.profile.security.filter;
 
-import com.example.highload.feign.LoginServiceFeignClient;
+import com.example.highload.profile.feign.LoginServiceFeignClient;
+import com.example.highload.profile.mapper.UserMapper;
+import com.example.highload.profile.feign.UserServiceFeignClient;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +24,8 @@ import static org.springframework.util.StringUtils.hasText;
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
     private static final String AUTHORIZATION = "Authorization";
-    private final UserService userService;
+    private final UserServiceFeignClient userService;
+    private final UserMapper userMapper;
     private final LoginServiceFeignClient loginServiceFeignClient;
     private final CircuitBreaker countCircuitBreaker;
 
@@ -31,7 +34,7 @@ public class JwtFilter extends GenericFilterBean {
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
         if (token != null && validateToken(token)) {
             String userLogin = getLoginFromToken(token);
-            UserDetails account = userService.findByLoginElseNull(userLogin);
+            UserDetails account = userMapper.userDtoToUser(userService.findByLoginElseNull(userLogin).getBody());
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(account, null, account.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
