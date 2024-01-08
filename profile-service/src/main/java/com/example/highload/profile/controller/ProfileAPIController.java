@@ -1,5 +1,6 @@
 package com.example.highload.profile.controller;
 
+import com.example.highload.profile.feign.ImageServiceFeignClient;
 import com.example.highload.profile.feign.UserServiceFeignClient;
 import com.example.highload.profile.model.inner.Image;
 import com.example.highload.profile.model.inner.Profile;
@@ -28,7 +29,7 @@ import java.util.NoSuchElementException;
 public class ProfileAPIController {
 
     private final ProfileService profileService;
-    private final ImageService imageService;
+    private final ImageServiceFeignClient imageService;
     private final UserServiceFeignClient userService;
     private final PaginationHeadersCreator paginationHeadersCreator;
     private final DataTransformer dataTransformer;
@@ -61,14 +62,17 @@ public class ProfileAPIController {
         return ResponseEntity.ok(dataTransformer.profileToDto(entity));
     }
 
-    @GetMapping("/single/{id}/images/{page}")
-    public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {
-        Profile entity = profileService.findById(id);
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Image> images = imageService.findAllProfileImages(id, pageable);
-        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(images);
-        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.imageListToDto(images.getContent()));
-    }
+    // TODO Should this be moved to image service? I moved it for now
+//    @GetMapping("/single/{id}/images/{page}")
+//    public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {
+//        Profile entity = profileService.findById(id);
+//        Pageable pageable = PageRequest.of(page, 50);
+//        // TODO Pageable to feign client, how?
+//        //Page<Image> images = imageService.findAllProfileImages(id, pageable);
+//        Page<Image> images = imageService.findAllProfileImages(id, page).getBody();
+//        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(images);
+//        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.imageListToDto(images.getContent()));
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions() {

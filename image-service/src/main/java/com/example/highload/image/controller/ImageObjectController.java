@@ -51,7 +51,7 @@ public class ImageObjectController {
     @PostMapping("/add/profile")
     public ResponseEntity<?> addImagesToProfile(@Valid @RequestBody List<ImageDto> imageDtos) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        int profileId = userService.findByLoginElseNull(login).getProfile().getId();
+        int profileId = userService.findByLoginElseNull(login).getBody().getProfile().getId();
         imageService.saveImageForProfile(imageDtos, profileId);
         return ResponseEntity.ok("Images added");
     }
@@ -59,7 +59,7 @@ public class ImageObjectController {
     @PostMapping("/change/profile")
     public ResponseEntity<?> changeMainImageOfProfile(@Valid @RequestBody ImageDto imageDto) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        int profileId = userService.findByLoginElseNull(login).getProfile().getId();
+        int profileId = userService.findByLoginElseNull(login).getBody().getProfile().getId();
         imageService.changeMainImageOfProfile(imageDto, profileId);
         return ResponseEntity.ok("Main image changed");
     }
@@ -78,6 +78,15 @@ public class ImageObjectController {
         int profileId = userService.findByLoginElseNull(login).getProfile().getId();
         imageService.removeImageForProfile(imageId, profileId);
         return ResponseEntity.ok("Image removed");
+    }
+
+    // This was moved from profile service
+    @GetMapping("/single/{id}/images/{page}")
+    public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {
+        Pageable pageable = PageRequest.of(page, 50);
+        Page<Image> images = imageService.findAllProfileImages(id, pageable);
+        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(images);
+        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.imageListToDto(images.getContent()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

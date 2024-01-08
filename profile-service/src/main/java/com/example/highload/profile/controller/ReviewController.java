@@ -1,11 +1,11 @@
 package com.example.highload.profile.controller;
 
+import com.example.highload.profile.mapper.ReviewMapper;
 import com.example.highload.profile.model.inner.Profile;
 import com.example.highload.profile.model.inner.Review;
 import com.example.highload.profile.model.network.ReviewDto;
 import com.example.highload.profile.services.ProfileService;
 import com.example.highload.profile.services.ReviewService;
-import com.example.highload.profile.utils.DataTransformer;
 import com.example.highload.profile.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +27,10 @@ import java.util.NoSuchElementException;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final ReviewMapper reviewMapper;
 
     private final ProfileService profileService;
     private final PaginationHeadersCreator paginationHeadersCreator;
-    private final DataTransformer dataTransformer;
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
@@ -46,7 +46,7 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page, 50);
         Profile entity = profileService.findById(profileId);
         Page<Review> entityList = reviewService.findAllProfileReviews(profileId, pageable);
-        List<ReviewDto> dtoList = dataTransformer.reviewListToDto(entityList.getContent());
+        List<ReviewDto> dtoList = reviewMapper.reviewListToReviewDtoList(entityList.getContent());
         HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
@@ -55,7 +55,7 @@ public class ReviewController {
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
     public ResponseEntity<?> getById(@PathVariable int id){
         Review entity = reviewService.findById(id);
-        ReviewDto reviewDto = dataTransformer.reviewToDto(entity);
+        ReviewDto reviewDto = reviewMapper.reviewToDto(entity);
         return ResponseEntity.ok(reviewDto);
     }
 
