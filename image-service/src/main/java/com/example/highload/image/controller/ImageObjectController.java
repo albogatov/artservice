@@ -1,9 +1,9 @@
-package com.example.highload.image.controllers;
+package com.example.highload.image.controller;
 
+import com.example.highload.image.feign.UserServiceFeignClient;
 import com.example.highload.image.model.inner.Image;
 import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.services.ImageService;
-import com.example.highload.image.services.UserService;
 import com.example.highload.image.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 public class ImageObjectController {
 
     private final ImageService imageService;
-    private final UserService userService;
+    private final UserServiceFeignClient userService;
     private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PreAuthorize("hasAuthority('CLIENT')")

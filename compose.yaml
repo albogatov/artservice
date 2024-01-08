@@ -32,8 +32,8 @@ services:
     container_name: eureka
     environment:
       - 'PAGINATION_MAX_SIZE=50'
-      - 'JWT_SECRET=itmo'
-      - 'JWT_EXPIRED=15'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84000'
     build:
       context: ./eureka-server
       dockerfile: Dockerfile
@@ -47,8 +47,8 @@ services:
     container_name: gateway
     environment:
       - 'PAGINATION_MAX_SIZE=50'
-      - 'JWT_SECRET=itmo'
-      - 'JWT_EXPIRED=15'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84000'
     build:
       context: ./gateway
       dockerfile: Dockerfile
@@ -62,8 +62,8 @@ services:
     container_name: login-service
     environment:
       - 'PAGINATION_MAX_SIZE=50'
-      - 'JWT_SECRET=itmo'
-      - 'JWT_EXPIRED=15'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84000'
     build:
       context: ./login-service
       dockerfile: Dockerfile
@@ -72,29 +72,13 @@ services:
     depends_on:
       - gateway
 
-  admin-service:
-    image: admin-service:latest
-    container_name: admin-service
-    environment:
-      - 'PAGINATION_MAX_SIZE=50'
-      - 'JWT_SECRET=itmo'
-      - 'JWT_EXPIRED=15'
-    build:
-      context: ./admin-service
-      dockerfile: Dockerfile
-    ports:
-      - "8182:8182"
-    depends_on:
-      - login-service
-
-
   user-service:
     image: user-service:latest
     container_name: user-service
     environment:
       - 'PAGINATION_MAX_SIZE=50'
-      - 'JWT_SECRET=itmo'
-      - 'JWT_EXPIRED=15'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84000'
     build:
       context: ./user-service
       dockerfile: Dockerfile
@@ -102,3 +86,19 @@ services:
       - "8181:8181"
     depends_on:
       - login-service
+
+  admin-service:
+    image: admin-service:latest
+    container_name: admin-service
+    environment:
+      - 'PAGINATION_MAX_SIZE=50'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84000'
+    build:
+      context: ./admin-service
+      dockerfile: Dockerfile
+    ports:
+      - "8182:8182"
+    depends_on:
+      - login-service
+      - user-service
