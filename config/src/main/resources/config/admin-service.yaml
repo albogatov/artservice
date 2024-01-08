@@ -6,7 +6,6 @@ spring:
       maximum-pool-size: 50
       connection-timeout: 6000
     url: jdbc:postgresql://localhost:5432/highload
-    #url: jdbc:postgresql://postgres:5432/airline
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -17,7 +16,6 @@ spring:
 eureka:
   client:
     serviceUrl:
-      #defaultZone: http://eureka:8761/eureka/
       defaultZone: http://localhost:8761/eureka/
 jwt:
   secret: ${JWT_SECRET}
