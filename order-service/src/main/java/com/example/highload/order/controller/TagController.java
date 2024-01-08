@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping(value = "/api/tag")
+@RequestMapping(value = "/api/order/tag")
 @RequiredArgsConstructor
 public class TagController {
 

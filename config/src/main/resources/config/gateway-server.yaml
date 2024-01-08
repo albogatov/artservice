@@ -23,6 +23,22 @@ spring:
           predicates:
             - Path=/api/user/**
             - Method=POST
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/order/**
+        - id: image-service
+          uri: lb://image-service
+          predicates:
+            - Path=/api/image/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notification/**
+        - id: profile-service
+          uri: lb://profile-service
+          predicates:
+            - Path=/api/profile/**
 eureka:
   client:
     serviceUrl:
