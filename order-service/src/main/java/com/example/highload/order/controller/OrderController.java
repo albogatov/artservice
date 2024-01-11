@@ -4,7 +4,6 @@ import com.example.highload.order.mapper.OrderMapper;
 import com.example.highload.order.model.inner.ClientOrder;
 import com.example.highload.order.model.network.OrderDto;
 import com.example.highload.order.services.OrderService;
-import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Or;
@@ -28,8 +27,6 @@ import java.util.NoSuchElementException;
 public class OrderController {
 
     private final OrderService orderService;
-    private final PaginationHeadersCreator paginationHeadersCreator;
-    private final OrderMapper orderMapper;
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('CLIENT')")

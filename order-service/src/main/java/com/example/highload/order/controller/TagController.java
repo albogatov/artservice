@@ -4,7 +4,6 @@ import com.example.highload.order.mapper.TagMapper;
 import com.example.highload.order.model.inner.Tag;
 import com.example.highload.order.model.network.TagDto;
 import com.example.highload.order.services.TagService;
-import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +26,6 @@ import java.util.NoSuchElementException;
 public class TagController {
 
     private final TagService tagService;
-    private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
