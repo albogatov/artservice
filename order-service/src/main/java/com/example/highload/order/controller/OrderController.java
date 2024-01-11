@@ -7,6 +7,7 @@ import com.example.highload.order.services.OrderService;
 import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -44,39 +47,33 @@ public class OrderController {
         else return ResponseEntity.badRequest().body("Couldn't save order, check data");
     }
 
-    @GetMapping("/all/user/{userId}/{page}")
+    @GetMapping("/all/user/{userId}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllUserOrders(@PathVariable int userId, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<ClientOrder> entityList = orderService.getUserOrders(userId, pageable);
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(orderMapper.orderListToOrderDtoList(entityList.getContent()));
+    public ResponseEntity<Flux<OrderDto>> getAllUserOrders(@PathVariable int userId) {
+        Flux<OrderDto> entityList = orderService.getUserOrders(userId);
+        return ResponseEntity.ok().body(entityList);
     }
 
-    @GetMapping("/open/user/{userId}/{page}")
+    @GetMapping("/open/user/{userId}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllUserOpenOrders(@PathVariable int userId, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<ClientOrder> entityList = orderService.getUserOpenOrders(userId, pageable);
-        List<OrderDto> dtoList = orderMapper.orderListToOrderDtoList(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    public ResponseEntity<?> getAllUserOpenOrders(@PathVariable int userId) {
+        Flux<OrderDto> entityList = orderService.getUserOpenOrders(userId);
+        return ResponseEntity.ok().body(entityList);
     }
 
     @GetMapping("/single/{orderId}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getById(@PathVariable int orderId) {
-        ClientOrder entity = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(orderMapper.orderToDto(entity));
+    public ResponseEntity<Mono<OrderDto>> getById(@PathVariable int orderId) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
 
     @PostMapping("/single/{orderId}/tags/add")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<?> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
-        ClientOrder order = orderService.addTagsToOrder(tagIds, orderId);
+        Mono<OrderDto> order = orderService.addTagsToOrder(tagIds, orderId);
         if (order != null) {
-            return ResponseEntity.ok(orderMapper.orderToDto(order));
+            return ResponseEntity.ok(order);
         }
         return ResponseEntity.badRequest().body("Invalid total tag number (should be not more than 10)!");
     }
@@ -84,39 +81,29 @@ public class OrderController {
     @PostMapping("/single/{orderId}/tags/delete")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<?> deleteTagsFromOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
-        ClientOrder order = orderService.deleteTagsFromOrder(tagIds, orderId);
+        Mono<OrderDto> order = orderService.deleteTagsFromOrder(tagIds, orderId);
         if (order != null) {
-            return ResponseEntity.ok(orderMapper.orderToDto(order));
+            return ResponseEntity.ok(order);
         }
         return ResponseEntity.badRequest().body("Invalid tag ids!");
     }
 
-    @GetMapping("/all/tag/{page}")
+    @GetMapping("/all/tag")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllOrdersByTags(@Valid @RequestBody List<Integer> tags, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<ClientOrder> entityList = orderService.getOrdersByTags(tags, pageable);
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(orderMapper.orderListToOrderDtoList(entityList.getContent()));
+    public ResponseEntity<Flux<OrderDto>> getAllOrdersByTags(@Valid @RequestBody List<Integer> tags) {
+        return ResponseEntity.ok().body(orderService.getOrdersByTags(tags));
     }
 
     @GetMapping("/open/tag/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllOpenOrdersByTags(@Valid @RequestBody List<Integer> tags, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<ClientOrder> entityList = orderService.getOpenOrdersByTags(tags, pageable);
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(orderMapper.orderListToOrderDtoList(entityList.getContent()));
+    public ResponseEntity<Flux<OrderDto>> getAllOpenOrdersByTags(@Valid @RequestBody List<Integer> tags, @PathVariable int page) {
+        return ResponseEntity.ok().body(orderService.getOpenOrdersByTags(tags));
     }
 
-    @GetMapping("/all/{page}")
+    @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllOrders(@PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<ClientOrder> entityList = orderService.getAllOrders(pageable);
-        List<OrderDto> dtoList = orderMapper.orderListToOrderDtoList(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    public ResponseEntity<Flux<OrderDto>> getAllOrders(@PathVariable int page) {
+        return ResponseEntity.ok().body(orderService.getAllOrders());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

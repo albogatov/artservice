@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,83 +31,80 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    public ClientOrder saveOrder(OrderDto orderDto) {
+    public Mono<OrderDto> saveOrder(OrderDto orderDto) {
         if (orderDto.getTags().size() > 10) return null;
-        return orderRepository.save(orderMapper.orderDtoToOrder(orderDto));
+        return orderRepository.save(orderMapper.orderDtoToOrder(orderDto)).map(orderMapper::orderToDto);
     }
 
     @Override
-    public ClientOrder updateOrder(OrderDto orderDto, int id) {
-        ClientOrder order = orderRepository.findById(id).orElseThrow();
-        order.setPrice(orderDto.getPrice());
-        order.setDescription(orderDto.getDescription());
-        order.setStatus(orderDto.getStatus());
-        orderRepository.save(order);
-        return order;
+    public Mono<OrderDto> updateOrder(OrderDto orderDto, int id) {
+        Mono<ClientOrder> order = orderRepository.findById(id);
+        order.map(res -> {
+            res.setPrice(orderDto.getPrice());
+            res.setDescription(orderDto.getDescription());
+            res.setStatus(orderDto.getStatus());
+            orderRepository.save(res);
+            return res;
+        });
+        return order.map(orderMapper::orderToDto);
     }
 
     @Override
-    public ClientOrder getOrderById(int id) {
-        return orderRepository.findById(id).orElseThrow();
+    public Mono<OrderDto> getOrderById(int id) {
+        return orderRepository.findById(id).map(orderMapper::orderToDto);
     }
 
     @Override
-    public Page<ClientOrder> getUserOrders(int userId, Pageable pageable) {
-        return orderRepository.findAllByUser_Id(userId, pageable).orElse(Page.empty());
+    public Flux<OrderDto> getUserOrders(int userId) {
+        return orderRepository.findAllByUser_Id(userId).map(orderMapper::orderToDto);
     }
 
     @Override
-    public Page<ClientOrder> getUserOpenOrders(int userId, Pageable pageable) {
-        return orderRepository.findAllByUser_IdAndStatus(userId, OrderStatus.OPEN, pageable).orElse(Page.empty());
+    public Flux<OrderDto> getUserOpenOrders(int userId) {
+        return orderRepository.findAllByUser_IdAndStatus(userId, OrderStatus.OPEN).map(orderMapper::orderToDto);
     }
 
     @Override
-    public Page<ClientOrder> getOrdersByTags(List<Integer> tagIds, Pageable pageable) {
-        return orderRepository.findAllByMultipleTagsIds(tagIds, tagIds.size(), pageable).orElse(Page.empty());
+    public Flux<OrderDto> getOrdersByTags(List<Integer> tagIds) {
+        return orderRepository.findAllByMultipleTagsIds(tagIds, tagIds.size()).map(orderMapper::orderToDto);
     }
 
     @Override
-    public Page<ClientOrder> getOpenOrdersByTags(List<Integer> tagIds, Pageable pageable) {
-        return orderRepository.findAllByMultipleTagsIdsAndStatus(tagIds, tagIds.size(), OrderStatus.OPEN.toString(), pageable).orElse(Page.empty());
+    public Flux<OrderDto> getOpenOrdersByTags(List<Integer> tagIds) {
+        return orderRepository.findAllByMultipleTagsIdsAndStatus(tagIds, tagIds.size(), OrderStatus.OPEN.toString()).map(orderMapper::orderToDto);
     }
 
     @Override
-    public Page<ClientOrder> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable);
-    }
-
-    @Override
-    @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
-    public ClientOrder addTagsToOrder(List<Integer> tagIds, int orderId) {
-        ClientOrder order = orderRepository.findById(orderId).orElseThrow();
-        List<Integer> oldTagIds = order.getTags().stream().map(Tag::getId).toList();
-        List<Integer> tagIdsToAdd = tagIds.stream().filter(i -> !oldTagIds.contains(i)).toList();
-        if (tagIdsToAdd.size() + oldTagIds.size() <= 10) {
-            List<Tag> tagsToAdd = new ArrayList<>();
-            for (Integer tagIdToAdd : tagIdsToAdd) {
-                Tag tag = tagService.findById(tagIdToAdd);
-                tagsToAdd.add(tag);
-            }
-            order.getTags().addAll(tagsToAdd);
-            orderRepository.save(order);
-            return order;
-        }
-        return null;
+    public Flux<OrderDto> getAllOrders() {
+        return orderRepository.findAll().map(orderMapper::orderToDto);
     }
 
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
-    public ClientOrder deleteTagsFromOrder(List<Integer> tagIds, int orderId) {
-        ClientOrder order = orderRepository.findById(orderId).orElseThrow();
-        List<Integer> oldTagIds = new ArrayList<>(order.getTags().stream().map(Tag::getId).toList());
-        for (Integer tagIdToDelete : tagIds) {
-            if (!oldTagIds.contains(tagIdToDelete)) {
-                return null;
-            }
-        }
-        List<Tag> newTagList = new ArrayList<>(order.getTags().stream().filter(tag -> !tagIds.contains(tag.getId())).toList());
-        order.setTags(newTagList);
-        orderRepository.save(order);
-        return order;
+    public Mono<OrderDto> addTagsToOrder(List<Integer> tagIds, int orderId) {
+        Mono<ClientOrder> order = orderRepository.findById(orderId);
+        Flux<Tag> tagsToAdd = Flux.empty();
+        tagIds.stream().forEach(id -> {
+            Flux.concat(tagService.findById(id), tagsToAdd);
+        });
+        order.subscribe(res -> {
+                    List<Tag> newTags = res.getTags().stream().filter(id -> !tagIds.contains(id)).toList();
+                    newTags.addAll(tagsToAdd.collectList().block());
+                    res.setTags(newTags);
+                    orderRepository.save(res);
+                }
+            );
+        return order.map(orderMapper::orderToDto);
+    }
+
+    @Override
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
+    public Mono<OrderDto> deleteTagsFromOrder(List<Integer> tagIds, int orderId) {
+        Mono<ClientOrder> order = orderRepository.findById(orderId);
+        order.subscribe(res -> {
+            res.setTags(res.getTags().stream().filter(tag -> !tagIds.contains(tag.getId())).toList());
+            orderRepository.save(res);
+        });
+        return order.map(orderMapper::orderToDto);
     }
 }
