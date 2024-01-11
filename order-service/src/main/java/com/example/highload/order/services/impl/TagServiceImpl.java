@@ -27,18 +27,18 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Mono<TagDto> saveTag(TagDto tagDto) {
-        return tagRepository.save(tagMapper.tagDtoToTag(tagDto)).map(tagMapper::tagToDto);
+        return Mono.just(tagRepository.save(tagMapper.tagDtoToTag(tagDto))).map(tagMapper::tagToDto);
     }
 
     @Override
     public Flux<TagDto> findAll() {
-        return tagRepository.findAll().map(tagMapper::tagToDto);
+        return Flux.fromIterable(tagRepository.findAll()).map(tagMapper::tagToDto);
     }
 
     @Override
     public void removeTagFromOrder(int tagId, int orderId) {
-        Mono<Tag> tagToRemove = tagRepository.findById(tagId);
-        Mono<ClientOrder> order = orderRepository.findById(orderId);
+        Mono<Tag> tagToRemove = Mono.just(tagRepository.findById(tagId).orElseThrow());
+        Mono<ClientOrder> order = Mono.just(orderRepository.findById(orderId).orElseThrow());
         order.map(res -> {
             res.setTags(new ArrayList<Tag>(res.getTags().stream().filter(tag -> tag.getId() != tagId).toList()));
             orderRepository.save(res);
@@ -48,6 +48,6 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Mono<TagDto> findById(Integer tagIdToAdd) {
-        return tagRepository.findById(tagIdToAdd).map(tagMapper::tagToDto);
+        return Mono.just(tagRepository.findById(tagIdToAdd).orElseThrow()).map(tagMapper::tagToDto);
     }
 }

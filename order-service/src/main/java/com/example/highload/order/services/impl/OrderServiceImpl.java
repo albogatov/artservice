@@ -33,12 +33,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Mono<OrderDto> saveOrder(OrderDto orderDto) {
         if (orderDto.getTags().size() > 10) return null;
-        return orderRepository.save(orderMapper.orderDtoToOrder(orderDto)).map(orderMapper::orderToDto);
+        return Mono.just(orderRepository.save(orderMapper.orderDtoToOrder(orderDto))).map(orderMapper::orderToDto);
     }
 
     @Override
     public Mono<OrderDto> updateOrder(OrderDto orderDto, int id) {
-        Mono<ClientOrder> order = orderRepository.findById(id);
+        Mono<ClientOrder> order = Mono.just(orderRepository.findById(id).orElseThrow());
         order.map(res -> {
             res.setPrice(orderDto.getPrice());
             res.setDescription(orderDto.getDescription());
@@ -51,38 +51,38 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Mono<OrderDto> getOrderById(int id) {
-        return orderRepository.findById(id).map(orderMapper::orderToDto);
+        return Mono.just(orderRepository.findById(id).orElseThrow()).map(orderMapper::orderToDto);
     }
 
     @Override
     public Flux<OrderDto> getUserOrders(int userId) {
-        return orderRepository.findAllByUser_Id(userId).map(orderMapper::orderToDto);
+        return Flux.fromIterable(orderRepository.findAllByUser_Id(userId).orElseThrow()).map(orderMapper::orderToDto);
     }
 
     @Override
     public Flux<OrderDto> getUserOpenOrders(int userId) {
-        return orderRepository.findAllByUser_IdAndStatus(userId, OrderStatus.OPEN).map(orderMapper::orderToDto);
+        return Flux.fromIterable(orderRepository.findAllByUser_IdAndStatus(userId, OrderStatus.OPEN).orElseThrow()).map(orderMapper::orderToDto);
     }
 
     @Override
     public Flux<OrderDto> getOrdersByTags(List<Integer> tagIds) {
-        return orderRepository.findAllByMultipleTagsIds(tagIds, tagIds.size()).map(orderMapper::orderToDto);
+        return Flux.fromIterable(orderRepository.findAllByMultipleTagsIds(tagIds, tagIds.size()).orElseThrow()).map(orderMapper::orderToDto);
     }
 
     @Override
     public Flux<OrderDto> getOpenOrdersByTags(List<Integer> tagIds) {
-        return orderRepository.findAllByMultipleTagsIdsAndStatus(tagIds, tagIds.size(), OrderStatus.OPEN.toString()).map(orderMapper::orderToDto);
+        return Flux.fromIterable(orderRepository.findAllByMultipleTagsIdsAndStatus(tagIds, tagIds.size(), OrderStatus.OPEN.toString()).orElseThrow()).map(orderMapper::orderToDto);
     }
 
     @Override
     public Flux<OrderDto> getAllOrders() {
-        return orderRepository.findAll().map(orderMapper::orderToDto);
+        return Flux.fromIterable(orderRepository.findAll()).map(orderMapper::orderToDto);
     }
 
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
     public Mono<OrderDto> addTagsToOrder(List<Integer> tagIds, int orderId) {
-        Mono<ClientOrder> order = orderRepository.findById(orderId);
+        Mono<ClientOrder> order = Mono.just(orderRepository.findById(orderId).orElseThrow());
         Flux<Tag> tagsToAdd = Flux.empty();
         tagIds.stream().forEach(id -> {
             Flux.concat(tagService.findById(id), tagsToAdd);
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
     public Mono<OrderDto> deleteTagsFromOrder(List<Integer> tagIds, int orderId) {
-        Mono<ClientOrder> order = orderRepository.findById(orderId);
+        Mono<ClientOrder> order = Mono.just(orderRepository.findById(orderId).orElseThrow());
         order.subscribe(res -> {
             res.setTags(res.getTags().stream().filter(tag -> !tagIds.contains(tag.getId())).toList());
             orderRepository.save(res);

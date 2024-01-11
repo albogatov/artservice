@@ -22,21 +22,21 @@ public class ResponseServiceImpl implements ResponseService {
 
     @Override
     public Mono<ResponseDto> saveResponse(ResponseDto responseDto) {
-        return responseRepository.save(responseMapper.responseDtoToResponse(responseDto)).map(responseMapper::responseToDto);
+        return Mono.just(responseRepository.save(responseMapper.responseDtoToResponse(responseDto))).map(responseMapper::responseToDto);
     }
 
     @Override
     public Flux<ResponseDto> findAllForOrder(int orderId) {
-        return responseRepository.findAllByOrder_Id(orderId).map(responseMapper::responseToDto);
+        return Flux.fromIterable(responseRepository.findAllByOrder_Id(orderId).orElseThrow()).map(responseMapper::responseToDto);
     }
 
     @Override
     public Flux<ResponseDto> findAllForUser(int userId) {
-        return responseRepository.findAllByUser_Id(userId).map(responseMapper::responseToDto);
+        return Flux.fromIterable(responseRepository.findAllByUser_Id(userId).orElseThrow()).map(responseMapper::responseToDto);
     }
 
     @Override
     public Mono<ResponseDto> findById(int id) {
-        return responseRepository.findById(id).map(responseMapper::responseToDto);
+        return Mono.just(responseRepository.findById(id).orElseThrow()).map(responseMapper::responseToDto);
     }
 }
