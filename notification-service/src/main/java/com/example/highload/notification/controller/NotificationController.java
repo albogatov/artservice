@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,43 +26,36 @@ public class NotificationController {
 
     private final NotificationService notificationService;
     private final PaginationHeadersCreator paginationHeadersCreator;
-    // TODO Can we make in list mapping with mapper or do we need data transformer here
-    private final DataTransformer dataTransformer;
 
-    @PostMapping("/save")
-    public ResponseEntity<?> save(@Valid @RequestBody NotificationDto data){
-        if(notificationService.saveNotification(data) != null)
-            return ResponseEntity.ok("Notification successfully created");
-        else return ResponseEntity.badRequest().body("Couldn't save notification, check data");
+    @PostMapping("/send/from-{senderId}/to-{receiverId}")
+    public ResponseEntity<?> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
+        notificationService.sendNotification(senderId, receiverId, token).subscribe();
+        return ResponseEntity.ok("Notification successfully created");
     }
 
     @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
     public ResponseEntity<?> setRead(@PathVariable int id){
-        if(notificationService.readNotification(id) != null)
-            return ResponseEntity.ok("Notification status is set");
-        else return ResponseEntity.badRequest().body("Couldn't change notification, check data");
+        notificationService.readNotification(id).subscribe();
+        return ResponseEntity.ok("Notification status is set");
     }
 
     @GetMapping("/all/{userId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllQueries(@PathVariable int userId, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Notification> entityList = notificationService.getAllUserNotifications(userId,pageable);
-        List<NotificationDto> dtoList = dataTransformer.notificationListToDto(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    public ResponseEntity<?> getAllQueries(@PathVariable int userId) {
+
+        Flux<Notification> entityList = notificationService.getAllUserNotifications(userId);
+        return ResponseEntity.ok().body(entityList);
+
     }
 
 
     @GetMapping("/new/{userId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getNewQueries(@PathVariable int userId, @PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Notification> entityList = notificationService.getNewUserNotifications(userId, pageable);
-        List<NotificationDto> dtoList = dataTransformer.notificationListToDto(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    public ResponseEntity<?> getNewQueries(@PathVariable int userId) {
+
+        Flux<Notification> entityList = notificationService.getNewUserNotifications(userId);
+        return ResponseEntity.ok().body(entityList);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
