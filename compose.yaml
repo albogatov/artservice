@@ -5,8 +5,8 @@ services:
     container_name: postgres
     environment:
       - 'POSTGRES_DB=highload'
-      - 'POSTGRES_PASSWORD=postgres'
-      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=high_user'
+      - 'POSTGRES_USER=high_user'
     command: postgres -c 'max_connections=1000'
     ports:
       - "5432:5432"
@@ -17,8 +17,8 @@ services:
     container_name: config
     environment:
       - 'PAGINATION_MAX_SIZE=50'
-      - 'JWT_SECRET=itmo'
-      - 'JWT_EXPIRED=15'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84600'
     build:
       context: ./config
       dockerfile: Dockerfile
@@ -33,7 +33,7 @@ services:
     environment:
       - 'PAGINATION_MAX_SIZE=50'
       - 'JWT_SECRET=ereboging'
-      - 'JWT_EXPIRED=84000'
+      - 'JWT_EXPIRED=84600'
     build:
       context: ./eureka-server
       dockerfile: Dockerfile
@@ -48,7 +48,7 @@ services:
     environment:
       - 'PAGINATION_MAX_SIZE=50'
       - 'JWT_SECRET=ereboging'
-      - 'JWT_EXPIRED=84000'
+      - 'JWT_EXPIRED=84600'
     build:
       context: ./gateway
       dockerfile: Dockerfile
@@ -63,7 +63,7 @@ services:
     environment:
       - 'PAGINATION_MAX_SIZE=50'
       - 'JWT_SECRET=ereboging'
-      - 'JWT_EXPIRED=84000'
+      - 'JWT_EXPIRED=84600'
     build:
       context: ./login-service
       dockerfile: Dockerfile
@@ -78,7 +78,7 @@ services:
     environment:
       - 'PAGINATION_MAX_SIZE=50'
       - 'JWT_SECRET=ereboging'
-      - 'JWT_EXPIRED=84000'
+      - 'JWT_EXPIRED=84600'
     build:
       context: ./user-service
       dockerfile: Dockerfile
@@ -93,12 +93,28 @@ services:
     environment:
       - 'PAGINATION_MAX_SIZE=50'
       - 'JWT_SECRET=ereboging'
-      - 'JWT_EXPIRED=84000'
+      - 'JWT_EXPIRED=84600'
     build:
       context: ./admin-service
       dockerfile: Dockerfile
     ports:
       - "8182:8182"
+    depends_on:
+      - login-service
+      - user-service
+
+  order-service:
+    image: order-service:latest
+    container_name: order-service
+    environment:
+      - 'PAGINATION_MAX_SIZE=50'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84600'
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - "8183:8183"
     depends_on:
       - login-service
       - user-service
