@@ -1,4 +1,4 @@
-package com.example.highload.login.secuity.util;
+package com.example.highload.login.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

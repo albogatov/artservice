@@ -2,7 +2,7 @@ package com.example.highload.login.controller;
 
 import com.example.highload.login.model.network.JwtResponse;
 import com.example.highload.login.model.network.UserDto;
-import com.example.highload.login.secuity.util.JwtTokenUtil;
+import com.example.highload.login.security.util.JwtTokenUtil;
 import com.example.highload.login.service.LoginService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,8 @@ public class LoginController {
         if (user.getLogin() == null || user.getPassword() == null) {
             return new ResponseEntity<>("Absent login or password", HttpStatus.BAD_REQUEST);
         }
-        JwtResponse response = JwtResponse.builder().token(loginService.login(user.getLogin(), user.getPassword()))
+        String jwt = loginService.login(user.getLogin(), user.getPassword());
+        JwtResponse response = JwtResponse.builder().token(jwt)
                 .userId(loginService.findByLoginElseNull(user.getLogin()).getId()).build();
         return ResponseEntity.ok(response);
     }

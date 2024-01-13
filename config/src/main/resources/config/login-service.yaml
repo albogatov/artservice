@@ -1,6 +1,10 @@
 server:
   port: 8180
 spring:
+  security:
+    basic:
+      enable: false
+    ignored: /**
   datasource:
     hikari:
       maximum-pool-size: 50
@@ -18,7 +22,7 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 jwt:
-  secret: ${JWT_SECRET}
-  expired: ${JWT_EXPIRED}
+  secret: ereboging
+  expired: 84600
 pagination:
-  maxSize: ${PAGINATION_MAX_SIZE}
+  maxSize: 50
