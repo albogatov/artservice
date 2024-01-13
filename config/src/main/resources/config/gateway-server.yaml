@@ -12,17 +12,14 @@ spring:
           uri: lb://login-service
           predicates:
             - Path=/api/auth/login, /api/auth/validate, /api/auth/get-login-from-token
-            - Method=POST
         - id: admin-service
           uri: lb://admin-service
           predicates:
             - Path=/api/admin/**
-            - Method=POST
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/api/user/**
-            - Method=POST
         - id: order-service
           uri: lb://order-service
           predicates:

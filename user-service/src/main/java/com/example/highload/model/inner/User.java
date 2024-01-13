@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private String login;
 
     @OneToOne(mappedBy = "user")
-    private Integer profileId;
+    private Profile profile;
 
     @NotBlank
     @Column(name = "hash_password", nullable = false)

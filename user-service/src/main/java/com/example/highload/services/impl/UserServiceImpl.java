@@ -33,13 +33,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(UserDto userDto) {
-        User user = userMapper.userDtoToUser(userDto);
-        user.setHashPassword(userDto.getPassword());
-        return userRepository.save(user);
-    }
-
-    @Override
     public void deactivateById(int userId) {
         User user = userRepository.findById(userId).orElseThrow();
         user.setIsActual(false);
@@ -58,6 +51,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteAllByIsActualFalseAndWhenDeletedTimeLessThan(dateTimeLTDelete);
     }
 
+    // TODO What is the use case here?
     @Override
     public User save(User user) {
         return userRepository.save(user);

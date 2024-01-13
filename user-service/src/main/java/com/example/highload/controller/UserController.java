@@ -23,17 +23,6 @@ public class UserController {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    //TODO Move to login service
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@Valid @RequestBody UserDto user) {
-//        if (user.getLogin() == null || user.getPassword() == null) {
-//            return new ResponseEntity<>("Absent login or password", HttpStatus.BAD_REQUEST);
-//        }
-//        JwtResponse response = JwtResponse.builder().token(authenticationService.authProcess(user.getLogin(), user.getPassword(),
-//                user.getRole().toString())).userId(userService.findByLoginElseNull(user.getLogin()).getId()).build();
-//        return ResponseEntity.ok(response);
-//    }
-
     //TODO Move to profile service
 //    @PostMapping("/profile/add/{userId}")
 //    public ResponseEntity<?> addProfile(@Valid @RequestBody ProfileDto profile, @PathVariable int userId) {
@@ -54,6 +43,8 @@ public class UserController {
     ResponseEntity<UserDto> findById(@PathVariable int id) {
         return ResponseEntity.ok(userMapper.userToDto(userService.findById(id)));
     }
+
+    // TODO What is the use case here?
     @PostMapping("/save")
     ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) {
         User user = userService.save(userMapper.userDtoToUser(userDto));
