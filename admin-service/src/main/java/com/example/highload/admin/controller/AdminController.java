@@ -21,22 +21,22 @@ public class AdminController {
     private final AdminUserService userService;
     private final AdminService adminService;
 
-    @PostMapping("/user/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        adminService.deleteUser(id);
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
+        adminService.deleteUser(id, token);
         return ResponseEntity.ok("User deleted");
     }
 
-    @PostMapping("/user/all/delete-expired/{days}")
-    public ResponseEntity<?> deleteLogicallyDeletedAccountsExpired(@PathVariable int days) {
-        adminService.deleteLogicallyDeletedUsers(days);
+    @PostMapping("/all/delete-expired/{days}")
+    public ResponseEntity<?> deleteLogicallyDeletedAccountsExpired(@PathVariable int days, @RequestHeader(value = "Authorization") String token) {
+        adminService.deleteLogicallyDeletedUsers(days, token);
         return ResponseEntity.ok("Users deleted");
     }
 
-    @PostMapping("/user/add")
-    public ResponseEntity<?> addUser(@Valid @RequestBody UserDto user) {
-        if (userService.findByLoginElseNull(user.getLogin()) == null) {
-            adminService.addUser(user);
+    @PostMapping("/add")
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserDto user, @RequestHeader(value = "Authorization") String token) {
+        if (userService.findByLoginElseNull(user.getLogin(), token) == null) {
+            adminService.addUser(user, token);
             return ResponseEntity.ok("User added");
         }
         return ResponseEntity.badRequest().body("User already exists!");

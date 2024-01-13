@@ -4,10 +4,7 @@ import com.example.highload.admin.model.network.UserDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -15,19 +12,19 @@ import java.time.LocalDateTime;
 public interface UserServiceFeignClient {
 
     @GetMapping("/api/user/findLogin/{login}")
-    ResponseEntity<UserDto> findByLoginElseNull(@PathVariable String login);
+    ResponseEntity<UserDto> findByLoginElseNull(@PathVariable String login, @RequestHeader("Authorization") String token);
 
     @GetMapping("/api/user/findId/{id}")
-    ResponseEntity<UserDto> findById(@PathVariable int id);
+    ResponseEntity<UserDto> findById(@PathVariable int id, @RequestHeader("Authorization") String token);
     @PostMapping("/api/user/save")
-    ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto);
+    ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto, @RequestHeader("Authorization") String token);
 
     @PostMapping("/api/user/deleteId/{id}")
-    ResponseEntity<?> deleteUser(@PathVariable int id);
+    ResponseEntity<?> deleteUser(@PathVariable int id, @RequestHeader("Authorization") String token);
 
     @GetMapping("/api/user/findExpired/{expiryTime}/{page}")
-    ResponseEntity<Page<UserDto>> findExpired(@PathVariable LocalDateTime expiryTime, int page);
+    ResponseEntity<Page<UserDto>> findExpired(@PathVariable LocalDateTime expiryTime, int page, @RequestHeader("Authorization") String token);
 
     @PostMapping("/api/user/deleteAllExpired/{expiryTime}")
-    ResponseEntity<Page<UserDto>> deleteAllExpired(@PathVariable LocalDateTime expiryTime);
+    ResponseEntity<Page<UserDto>> deleteAllExpired(@PathVariable LocalDateTime expiryTime, @RequestHeader("Authorization") String token);
 }

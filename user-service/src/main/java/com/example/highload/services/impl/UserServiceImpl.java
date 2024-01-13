@@ -3,6 +3,7 @@ package com.example.highload.services.impl;
 import com.example.highload.mapper.UserMapper;
 import com.example.highload.model.inner.User;
 import com.example.highload.model.network.UserDto;
+import com.example.highload.repos.RoleRepository;
 import com.example.highload.repos.UserRepository;
 import com.example.highload.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -54,6 +57,8 @@ public class UserServiceImpl implements UserService {
     // TODO What is the use case here?
     @Override
     public User save(User user) {
+        user.getRole().setId(roleRepository.findByName(user.getRole().getName()).orElseThrow().getId());
+        user.setIsActual(true);
         return userRepository.save(user);
     }
 

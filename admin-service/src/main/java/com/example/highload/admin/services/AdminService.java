@@ -6,10 +6,10 @@ import com.example.highload.admin.model.network.UserDto;
 public interface AdminService {
 
 
-    User addUser(UserDto userDto);
+    User addUser(UserDto userDto, String token);
 
-    void deleteUser(int userId);
+    void deleteUser(int userId, String token);
 
-    void deleteLogicallyDeletedUsers(int daysToExpire);
+    void deleteLogicallyDeletedUsers(int daysToExpir, String token);
 
 }

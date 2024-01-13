@@ -14,23 +14,23 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final UserMapper userMapper;
     private final UserServiceFeignClient userServiceFeignClient;
 
-    public User findByLoginElseNull(String login) {
-        return userMapper.userDtoToUser(userServiceFeignClient.findByLoginElseNull(login).getBody());
+    public User findByLoginElseNull(String login, String token) {
+        return userMapper.userDtoToUser(userServiceFeignClient.findByLoginElseNull(login, token).getBody());
     }
 
     @Override
-    public User save(User user) {
-        return userMapper.userDtoToUser(userServiceFeignClient.saveUser(userMapper.userToDto(user)).getBody());
+    public User save(User user, String token) {
+        return userMapper.userDtoToUser(userServiceFeignClient.saveUser(userMapper.userToDto(user), token).getBody());
     }
 
     @Override
-    public void deleteById(Integer id) {
-        userServiceFeignClient.deleteUser(id).getBody();
+    public void deleteById(Integer id, String token) {
+        userServiceFeignClient.deleteUser(id, token);
     }
 
     @Override
-    public User findById(int id) {
-        return userMapper.userDtoToUser(userServiceFeignClient.findById(id).getBody());
+    public User findById(int id, String token) {
+        return userMapper.userDtoToUser(userServiceFeignClient.findById(id, token).getBody());
     }
 
 

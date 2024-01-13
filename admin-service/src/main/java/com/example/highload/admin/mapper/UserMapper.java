@@ -16,4 +16,10 @@ public interface UserMapper {
     default RoleType map(Role role) {
         return role.getName();
     }
+
+    default Role map(RoleType roleType) {
+        Role role = new Role();
+        role.setName(roleType);
+        return role;
+    }
 }

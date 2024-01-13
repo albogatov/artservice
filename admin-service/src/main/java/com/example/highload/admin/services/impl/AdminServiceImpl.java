@@ -23,14 +23,14 @@ public class AdminServiceImpl implements AdminService {
     private final AdminUserServiceImpl adminUserService;
     private final UserMapper userMapper;
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {Exception.class})
-    public void deleteLogicallyDeletedUsers(int daysToExpire) {
+    public void deleteLogicallyDeletedUsers(int daysToExpire, String token) {
         LocalDateTime dateTimeLTDelete = LocalDateTime.now().minusDays(daysToExpire);
         Page<UserDto> usersToDelete;
         //Pageable pageable;
         int i = 0;
         do {
             //pageable = PageRequest.of(i, 50);
-            usersToDelete = userServiceFeignClient.findExpired(dateTimeLTDelete, i).getBody();
+            usersToDelete = userServiceFeignClient.findExpired(dateTimeLTDelete, i, token).getBody();
             for (UserDto user :
                     usersToDelete.getContent()) {
 
@@ -52,20 +52,20 @@ public class AdminServiceImpl implements AdminService {
             i++;
         } while (usersToDelete.getContent().size() > 0);
 
-        userServiceFeignClient.deleteAllExpired(dateTimeLTDelete);
+        userServiceFeignClient.deleteAllExpired(dateTimeLTDelete, token);
 
     }
 
     @Override
-    public User addUser(UserDto userDto) {
+    public User addUser(UserDto userDto, String token) {
         User user = userMapper.userDtoToUser(userDto);
         user.setHashPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        return adminUserService.save(user);
+        return adminUserService.save(user, token);
     }
 
     @Override
-    public void deleteUser(int userId) {
-        User user = adminUserService.findById(userId);
-        adminUserService.deleteById(user.getId());
+    public void deleteUser(int userId, String token) {
+        User user = adminUserService.findById(userId, token);
+        adminUserService.deleteById(user.getId(), token);
     }
 }
