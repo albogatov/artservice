@@ -4,28 +4,30 @@ import com.example.highload.order.model.inner.ClientOrder;
 import com.example.highload.order.model.network.OrderDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface OrderService {
 
-    ClientOrder saveOrder(OrderDto orderDto);
+    Mono<OrderDto> saveOrder(OrderDto orderDto);
 
-    ClientOrder updateOrder(OrderDto orderDto, int id);
+    Mono<OrderDto> updateOrder(OrderDto orderDto, int id);
 
-    ClientOrder getOrderById(int id);
+    Mono<OrderDto> getOrderById(int id);
 
-    Page<ClientOrder> getUserOrders(int userId, Pageable pageable);
+    Flux<OrderDto> getUserOrders(int userId);
 
-    Page<ClientOrder> getUserOpenOrders(int userId, Pageable pageable);
+    Flux<OrderDto> getUserOpenOrders(int userId);
 
-    Page<ClientOrder> getOrdersByTags(List<Integer> tagIds, Pageable pageable);
+    Flux<OrderDto> getOrdersByTags(List<Integer> tagIds);
 
-    Page<ClientOrder> getOpenOrdersByTags(List<Integer> tagIds, Pageable pageable);
+    Flux<OrderDto> getOpenOrdersByTags(List<Integer> tagIds);
 
-    Page<ClientOrder> getAllOrders(Pageable pageable);
+    Flux<OrderDto> getAllOrders();
 
-    ClientOrder addTagsToOrder(List<Integer> tagIds, int orderId);
+    Mono<OrderDto> addTagsToOrder(List<Integer> tagIds, int orderId);
 
-    ClientOrder deleteTagsFromOrder(List<Integer> tagIds, int orderId);
+    Mono<OrderDto> deleteTagsFromOrder(List<Integer> tagIds, int orderId);
 }

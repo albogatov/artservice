@@ -28,8 +28,8 @@ public class User implements UserDetails {
     @Column(name = "login", nullable = false, unique = true)
     private String login;
 
-    @OneToOne(mappedBy = "user")
-    private Integer profileId;
+//    @OneToOne(mappedBy = "user")
+//    private Integer profileId;
 
     @NotBlank
     @Column(name = "hash_password", nullable = false)

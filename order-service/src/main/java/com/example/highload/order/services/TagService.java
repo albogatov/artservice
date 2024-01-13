@@ -4,16 +4,18 @@ import com.example.highload.order.model.inner.Tag;
 import com.example.highload.order.model.network.TagDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface TagService {
 
-    Tag saveTag(TagDto tagDto);
+    Mono<TagDto> saveTag(TagDto tagDto);
 
-    Page<Tag> findAll(Pageable pageable);
+    Flux<TagDto> findAll();
 
     void removeTagFromOrder(int tagId, int orderId);
 
-    Tag findById(Integer tagIdToAdd);
+    Mono<TagDto> findById(Integer tagIdToAdd);
 }

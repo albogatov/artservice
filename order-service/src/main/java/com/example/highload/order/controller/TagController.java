@@ -4,7 +4,6 @@ import com.example.highload.order.mapper.TagMapper;
 import com.example.highload.order.model.inner.Tag;
 import com.example.highload.order.model.network.TagDto;
 import com.example.highload.order.services.TagService;
-import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.postgresql.util.*;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,8 +26,6 @@ import java.util.NoSuchElementException;
 public class TagController {
 
     private final TagService tagService;
-    private final PaginationHeadersCreator paginationHeadersCreator;
-    private final TagMapper tagMapper;
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -37,13 +35,9 @@ public class TagController {
         else return ResponseEntity.badRequest().body("Couldn't save tag, check data");
     }
 
-    @GetMapping("/all/{page}")
-    public ResponseEntity<?> getAll(@PathVariable int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Tag> entityList = tagService.findAll(pageable);
-        List<TagDto> dtoList = tagMapper.tagListToTagDtoList(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    @GetMapping("/all")
+    public ResponseEntity<Flux<TagDto>> getAll() {
+        return ResponseEntity.ok().body(tagService.findAll());
     }
 
     @PostMapping("/remove/{orderId}/{tagId}")

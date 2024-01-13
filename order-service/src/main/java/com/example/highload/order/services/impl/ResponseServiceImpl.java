@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -19,22 +21,22 @@ public class ResponseServiceImpl implements ResponseService {
     private final ResponseMapper responseMapper;
 
     @Override
-    public Response saveResponse(ResponseDto responseDto) {
-        return responseRepository.save(responseMapper.responseDtoToResponse(responseDto));
+    public Mono<ResponseDto> saveResponse(ResponseDto responseDto) {
+        return Mono.just(responseRepository.save(responseMapper.responseDtoToResponse(responseDto))).map(responseMapper::responseToDto);
     }
 
     @Override
-    public Page<Response> findAllForOrder(int orderId, Pageable pageable) {
-        return responseRepository.findAllByOrder_Id(orderId, pageable).orElse(Page.empty());
+    public Flux<ResponseDto> findAllForOrder(int orderId) {
+        return Flux.fromIterable(responseRepository.findAllByOrder_Id(orderId).orElseThrow()).map(responseMapper::responseToDto);
     }
 
     @Override
-    public Page<Response> findAllForUser(int userId, Pageable pageable) {
-        return responseRepository.findAllByUser_Id(userId, pageable).orElse(Page.empty());
+    public Flux<ResponseDto> findAllForUser(int userId) {
+        return Flux.fromIterable(responseRepository.findAllByUser_Id(userId).orElseThrow()).map(responseMapper::responseToDto);
     }
 
     @Override
-    public Response findById(int id) {
-        return responseRepository.findById(id).orElseThrow();
+    public Mono<ResponseDto> findById(int id) {
+        return Mono.just(responseRepository.findById(id).orElseThrow()).map(responseMapper::responseToDto);
     }
 }

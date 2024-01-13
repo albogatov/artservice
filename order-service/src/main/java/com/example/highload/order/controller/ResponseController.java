@@ -4,7 +4,6 @@ import com.example.highload.order.mapper.ResponseMapper;
 import com.example.highload.order.model.inner.Response;
 import com.example.highload.order.model.network.ResponseDto;
 import com.example.highload.order.services.ResponseService;
-import com.example.highload.order.utils.PaginationHeadersCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,8 +26,6 @@ import java.util.NoSuchElementException;
 public class ResponseController {
 
     private final ResponseService responseService;
-    private final ResponseMapper responseMapper;
-    private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@Valid @RequestBody ResponseDto data){
@@ -35,31 +34,22 @@ public class ResponseController {
         else return ResponseEntity.badRequest().body("Couldn't save response, check data");
     }
 
-    @GetMapping("/all/order/{orderId}/{page}")
+    @GetMapping("/all/order/{orderId}")
     @PreAuthorize("hasAnyAuthority('ARTIST', 'CLIENT')")
-    public ResponseEntity<?> getAllByOrder(@PathVariable int orderId, @PathVariable int page){
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Response> entityList = responseService.findAllForOrder(orderId, pageable);
-        List<ResponseDto> dtoList = responseMapper.responseListToResponseDtoList(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.endlessSwipeHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    public ResponseEntity<Flux<ResponseDto>> getAllByOrder(@PathVariable int orderId, @PathVariable int page){
+        return ResponseEntity.ok().body(responseService.findAllForOrder(orderId));
     }
 
-    @GetMapping("/all/user/{userId}/{page}")
+    @GetMapping("/all/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ARTIST')")
-    public ResponseEntity<?> getAllByUser(@PathVariable int userId, @PathVariable int page){
-        Pageable pageable = PageRequest.of(page, 50);
-        Page<Response> entityList = responseService.findAllForUser(userId, pageable);
-        List<ResponseDto> dtoList = responseMapper.responseListToResponseDtoList(entityList.getContent());
-        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(entityList);
-        return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
+    public ResponseEntity<Flux<ResponseDto>> getAllByUser(@PathVariable int userId, @PathVariable int page){
+        return ResponseEntity.ok().body(responseService.findAllForUser(userId));
     }
 
     @GetMapping("/single/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getById(@PathVariable int id){
-        Response entity = responseService.findById(id);
-        return ResponseEntity.ok(responseMapper.responseToDto(entity));
+    public ResponseEntity<Mono<ResponseDto>> getById(@PathVariable int id){
+        return ResponseEntity.ok(responseService.findById(id));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

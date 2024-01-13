@@ -17,15 +17,15 @@ public class ImageObject {
     @Column(name = "type", nullable = false)
     private ImageObjectType type;
 
-    @ManyToOne
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
-    private Integer profileId;
+//    @ManyToOne
+//    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+//    private Integer profileId;
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Integer orderId;
+    private ClientOrder order;
 
     @OneToOne
     @JoinColumn(name = "image_id", referencedColumnName = "id", nullable = false)
-    private Integer imageId;
+    private Image image;
 }
