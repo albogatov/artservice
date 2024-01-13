@@ -4,6 +4,7 @@ import com.example.highload.login.model.network.JwtResponse;
 import com.example.highload.login.model.network.UserDto;
 import com.example.highload.login.security.util.JwtTokenUtil;
 import com.example.highload.login.service.LoginService;
+import com.example.highload.login.service.UserAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     private final LoginService loginService;
+    private final UserAuthService userAuthService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/login")
@@ -31,6 +33,11 @@ public class LoginController {
         JwtResponse response = JwtResponse.builder().token(jwt)
                 .userId(loginService.findByLoginElseNull(user.getLogin()).getId()).build();
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/details")
+    public ResponseEntity<?> details(@Valid @RequestBody UserDto user) {
+        return ResponseEntity.ok(userAuthService.userDetailsService());
     }
 
     @PostMapping("/validate")

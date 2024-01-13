@@ -1,5 +1,6 @@
 package com.example.highload.order.security.config;
 
+import com.example.highload.order.feign.LoginServiceFeignClient;
 import com.example.highload.order.feign.UserServiceFeignClient;
 import com.example.highload.order.mapper.UserMapper;
 import com.example.highload.order.security.filter.JwtFilter;
@@ -30,7 +31,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final UserServiceFeignClient userService;
+    private final LoginServiceFeignClient loginService;
     private final UserMapper userMapper;
     private final JwtFilter jwtRequestFilter;
 
@@ -43,18 +44,18 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .exceptionHandling(config -> config.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .authenticationProvider(daoAuthenticationProvider())
+                //.authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(login -> userMapper.userDtoToUser(userService.findByLoginElseNull(login).getBody()));
-        return daoAuthenticationProvider;
-    }
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider() {
+//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+//        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+//        daoAuthenticationProvider.setUserDetailsService(loginService.details().getBody());
+//        return daoAuthenticationProvider;
+//    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
