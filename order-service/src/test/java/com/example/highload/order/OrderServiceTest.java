@@ -9,8 +9,10 @@ import com.example.highload.order.model.inner.ClientOrder;
 import com.example.highload.order.model.inner.Tag;
 import com.example.highload.order.model.inner.User;
 import com.example.highload.order.model.network.OrderDto;
+import com.example.highload.order.model.network.ResponseDto;
 import com.example.highload.order.model.network.TagDto;
 import com.example.highload.order.repos.OrderRepository;
+import com.example.highload.order.repos.ResponseRepository;
 import com.example.highload.order.repos.TagRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
@@ -38,6 +40,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -69,6 +72,9 @@ public class OrderServiceTest {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ResponseRepository responseRepository;
 
     @Autowired
     private TagMapper tagMapper;
@@ -495,6 +501,101 @@ public class OrderServiceTest {
         Assertions.assertAll(
                 () -> Assertions.assertEquals(0, orderDtos2.size())
         );
+    }
+
+    @Test
+    @Order(10)
+    public void addResponse() {
+
+        // save valid
+
+        ResponseDto responseDto = new ResponseDto();
+        responseDto.setApproved(false);
+        responseDto.setText("-");
+        responseDto.setUserId(2);
+        responseDto.setUserName("artist1");
+        responseDto.setOrderId(1);
+
+        ExtractableResponse<Response> response1 =
+                given()
+                        .header("Authorization", "Bearer " + "mock")
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(responseDto)
+                        .when()
+                        .post("/api/order/response/save")
+                        .then()
+                        .extract();
+
+        List<com.example.highload.order.model.inner.Response> result = responseRepository
+                .findAllByOrder_Id(1).orElseThrow();
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals("Response added", response1.body().asString()),
+                () -> Assertions.assertEquals(HttpStatus.OK.value(), response1.statusCode()),
+                () -> Assertions.assertEquals(1, result.size()),
+                () -> Assertions.assertEquals("artist1", result.get(0).getUser().getLogin())
+        );
+    }
+
+    @Test
+    @Order(11)
+    public void getAllByOrder() {
+
+
+        // get all
+
+        ExtractableResponse<Response> response1 =
+                given()
+                        .header("Authorization", "Bearer " + "mock")
+                        .header("Content-type", "application/json")
+                        .when()
+                        .get("/api/order/response/all/order/" + 1 )
+                        .then()
+                        .extract();
+
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(HttpStatus.OK.value(), response1.statusCode())
+        );
+
+        List<ResponseDto> responseDtos = response1.body().jsonPath().getList(".", ResponseDto.class);
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(1, responseDtos.size()),
+                () -> Assertions.assertEquals("artist1", responseDtos.get(0).getUserName())
+        );
+
+
+    }
+
+
+    @Test
+    @Order(12)
+    public void approveResponse() {
+
+
+        ExtractableResponse<Response> response1 =
+                given()
+                        .header("Authorization", "Bearer " + "mock")
+                        .header("Content-type", "application/json")
+                        .when()
+                        .post("/api/order/response/approve/" + 1)
+                        .then()
+                        .extract();
+
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(HttpStatus.OK.value(), response1.statusCode())
+        );
+
+        com.example.highload.order.model.inner.Response response = responseRepository.findById(1).orElseThrow();
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(true, response.getIsApproved())
+        );
+
+
     }
 }
 
