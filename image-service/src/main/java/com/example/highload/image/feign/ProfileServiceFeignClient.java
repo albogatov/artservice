@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @CircuitBreaker(name = "CbServiceBasedOnCount")
 @FeignClient("profile-service")
 public interface ProfileServiceFeignClient {
-    @GetMapping("/single/{id}")
-    public ResponseEntity<ProfileDto> getById(@PathVariable int id, @RequestHeader("Authorization") String token);
+    @GetMapping("/api/profile/core/single/{id}")
+    ResponseEntity<ProfileDto> getById(@PathVariable int id, @RequestHeader("Authorization") String token);
 
-    @GetMapping("/image/{id}")
-    public ResponseEntity<ImageDto> setNewMainImage(@PathVariable int id, @RequestBody ImageDto imageDto, @RequestHeader("Authorization") String token);
+    @GetMapping("/api/profile/core/single/{id}/image")
+    ResponseEntity<ImageDto> setNewMainImage(@PathVariable int id, @RequestBody ImageDto imageDto, @RequestHeader("Authorization") String token);
 }

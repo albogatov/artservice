@@ -12,6 +12,6 @@ import reactor.core.publisher.Mono;
 @CircuitBreaker(name = "CbServiceBasedOnCount")
 @FeignClient("order-service")
 public interface OrderServiceFeignClient {
-    @GetMapping("/single/{orderId}")
+    @GetMapping("/api/order/core/single/{orderId}")
     ResponseEntity<OrderDto> getById(@PathVariable int orderId, @RequestHeader("Authorization") String token);
 }

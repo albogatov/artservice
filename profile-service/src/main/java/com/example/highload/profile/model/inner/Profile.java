@@ -25,6 +25,9 @@ public class Profile {
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
+//    @Column(name = "image_id")
+//    private Integer imageId;
+
     @NotBlank
     @Column(name = "name", nullable = false)
     private String name;
@@ -40,15 +43,15 @@ public class Profile {
     @Column(name = "mail", nullable = false)
     private String mail;
 
-    // TODO What here?
-    @OneToMany(mappedBy = "profile", fetch = FetchType.EAGER)
-    private List<ImageObject> images;
-
-    @OneToMany(mappedBy = "receiverProfile")
-    private List<Notification> receivedNotifications;
-
-    @OneToMany(mappedBy = "senderProfile")
-    private List<Notification> sentNotifications;
+//    // TODO What here?
+//    @OneToMany(mappedBy = "profile", fetch = FetchType.EAGER)
+//    private List<ImageObject> images;
+//
+//    @OneToMany(mappedBy = "receiverProfile")
+//    private List<Notification> receivedNotifications;
+//
+//    @OneToMany(mappedBy = "senderProfile")
+//    private List<Notification> sentNotifications;
 
     @Override
     public String toString() {

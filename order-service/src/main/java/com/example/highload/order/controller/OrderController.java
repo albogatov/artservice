@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping(value = "/api/order/client")
+@RequestMapping(value = "/api/order/core")
 @RequiredArgsConstructor
 public class OrderController {
 
