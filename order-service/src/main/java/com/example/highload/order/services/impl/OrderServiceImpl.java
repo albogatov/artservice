@@ -43,14 +43,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Mono<OrderDto> updateOrder(OrderDto orderDto, int id) {
         Mono<ClientOrder> order = Mono.just(orderRepository.findById(id).orElseThrow());
-        order.map(res -> {
+        return order.map(res -> {
             res.setPrice(orderDto.getPrice());
             res.setDescription(orderDto.getDescription());
             res.setStatus(orderDto.getStatus());
-            orderRepository.save(res);
-            return res;
-        });
-        return order.map(orderMapper::orderToDto);
+            return orderRepository.save(res);
+        }).map(orderMapper::orderToDto);
     }
 
     @Override
@@ -88,10 +86,13 @@ public class OrderServiceImpl implements OrderService {
     public Mono<OrderDto> addTagsToOrder(List<Integer> tagIds, int orderId) {
         Mono<ClientOrder> order = Mono.just(orderRepository.findById(orderId).orElseThrow());
         Flux<Integer> tagReceived = Flux.fromIterable(tagIds);
+        List<Integer> existingTagIds = order.block().getTags().stream().map(tag -> {
+            return tag.getId();
+        }).toList();
         return order.map(res -> {
             res.setTags(new ArrayList<>(Stream.concat(tagReceived.map(id -> {
                     return tagService.findById(id).map(tagMapper::tagDtoToTag).block();
-            }).filter(tag -> !res.getTags().contains(tag)).collectList().block().stream(), res.getTags().stream()).toList()));
+            }).filter(tag -> !existingTagIds.contains(tag.getId())).collectList().block().stream(), res.getTags().stream()).toList()));
             return orderRepository.save(res);
         })
                 .map(orderMapper::orderToDto);

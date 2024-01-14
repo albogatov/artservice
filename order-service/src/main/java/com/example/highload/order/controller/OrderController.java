@@ -38,10 +38,10 @@ public class OrderController {
 
     @PostMapping("/update/{orderId}")
     @PreAuthorize("hasAuthority('CLIENT')")
-    public ResponseEntity<?> update(@Valid @RequestBody OrderDto data, @PathVariable int orderId) {
-        if (orderService.updateOrder(data, orderId) != null)
-            return ResponseEntity.ok("Order updated");
-        else return ResponseEntity.badRequest().body("Couldn't save order, check data");
+    public ResponseEntity<Mono<OrderDto>> update(@Valid @RequestBody OrderDto data, @PathVariable int orderId) {
+        Mono<OrderDto> order = orderService.updateOrder(data, orderId);
+//        order.subscribe();
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping("/all/user/{userId}")
@@ -69,7 +69,7 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<Mono<OrderDto>> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.addTagsToOrder(tagIds, orderId);
-        order.subscribe();
+//        order.subscribe();
         return ResponseEntity.ok(order);
     }
 
@@ -77,7 +77,7 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<Mono<OrderDto>> deleteTagsFromOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.deleteTagsFromOrder(tagIds, orderId);
-        order.subscribe();
+//        order.subscribe();
         return ResponseEntity.ok(order);
     }
 
