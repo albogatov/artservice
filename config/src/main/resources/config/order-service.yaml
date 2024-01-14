@@ -6,8 +6,8 @@ spring:
       maximum-pool-size: 50
       connection-timeout: 6000
     url: jdbc:postgresql://localhost:5432/highload
-    username: postgres
-    password: postgres
+    username: high_user
+    password: high_user
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
