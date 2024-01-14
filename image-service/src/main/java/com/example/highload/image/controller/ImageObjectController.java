@@ -81,6 +81,22 @@ public class ImageObjectController {
         return ResponseEntity.ok("Image removed");
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/removeAll/profile/{profileId}")
+    public ResponseEntity<?> removeAllImagesForProfile(@PathVariable int profileId, @RequestHeader(value = "Authorization") String token) {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        imageService.removeAllImagesForProfile(profileId);
+        return ResponseEntity.ok("Images removed");
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/removeAll/order/{orderId}")
+    public ResponseEntity<?> removeAllImagesForOrder(@PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        imageService.removeAllImagesForOrder(orderId);
+        return ResponseEntity.ok("Images removed");
+    }
+
     // This was moved from profile service
     @GetMapping("/single/{id}/images/{page}")
     public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {

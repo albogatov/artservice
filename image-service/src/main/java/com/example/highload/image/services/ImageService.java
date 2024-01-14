@@ -1,8 +1,6 @@
 package com.example.highload.image.services;
 
-import com.example.highload.image.model.inner.ClientOrder;
 import com.example.highload.image.model.inner.Image;
-import com.example.highload.image.model.inner.Profile;
 import com.example.highload.image.model.network.ImageDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,9 +23,9 @@ public interface ImageService {
 
     void removeImageById(int imageId);
 
-    void removeAllImagesForProfile(Profile profile);
+    void removeAllImagesForProfile(Integer profileId);
 
-    void removeAllImagesForOrder(ClientOrder order);
+    void removeAllImagesForOrder(Integer orderId);
 
     void removeImageForProfile(int imageId, int profileId);
 

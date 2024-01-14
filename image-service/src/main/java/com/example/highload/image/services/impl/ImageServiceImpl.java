@@ -7,7 +7,6 @@ import com.example.highload.image.mapper.OrderMapper;
 import com.example.highload.image.mapper.ProfileMapper;
 import com.example.highload.image.model.inner.ClientOrder;
 import com.example.highload.image.model.inner.Profile;
-import com.example.highload.image.model.network.OrderDto;
 import com.example.highload.image.services.ImageService;
 import com.example.highload.image.model.enums.ImageObjectType;
 import com.example.highload.image.model.inner.Image;
@@ -15,7 +14,6 @@ import com.example.highload.image.model.inner.ImageObject;
 import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.repos.ImageObjectRepository;
 import com.example.highload.image.repos.ImageRepository;
-import com.example.highload.image.services.ImageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -106,13 +104,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void removeAllImagesForProfile(Profile profile) {
-        imageRepository.deleteAllByImageObject_Profile(profile.getId());
+    public void removeAllImagesForProfile(Integer profileId) {
+        imageRepository.deleteAllByImageObject_Profile(profileId);
     }
 
     @Override
-    public void removeAllImagesForOrder(ClientOrder order) {
-        imageRepository.deleteAllByImageObject_Order(order.getId());
+    public void removeAllImagesForOrder(Integer orderId) {
+        imageRepository.deleteAllByImageObject_Order(orderId);
     }
 
     @Override
