@@ -40,12 +40,6 @@ public class TagController {
         return ResponseEntity.ok().body(tagService.findAll());
     }
 
-    @PostMapping("/remove/{orderId}/{tagId}")
-    public ResponseEntity<?> removeTagFromOrder(@PathVariable int orderId, @PathVariable int tagId) {
-        tagService.removeTagFromOrder(tagId, orderId);
-        return ResponseEntity.ok("Tag successfully removed from order");
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions() {
         return ResponseEntity.badRequest().body("Request body validation failed!");

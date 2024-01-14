@@ -41,6 +41,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Mono<ClientOrder> saveOrder(ClientOrder order) {
+        if (order.getTags().size() > 10) return null;
+        return Mono.just(orderRepository.save(order));
+    }
+
+    @Override
     public Mono<OrderDto> updateOrder(OrderDto orderDto, int id) {
         Mono<ClientOrder> order = Mono.just(orderRepository.findById(id).orElseThrow());
         return order.map(res -> {
@@ -54,6 +60,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Mono<OrderDto> getOrderById(int id) {
         return Mono.just(orderRepository.findById(id).orElseThrow()).map(orderMapper::orderToDto);
+    }
+
+    @Override
+    public Mono<ClientOrder> findById(int id) {
+        return Mono.just(orderRepository.findById(id).orElseThrow());
     }
 
     @Override
