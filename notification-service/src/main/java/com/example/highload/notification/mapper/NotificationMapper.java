@@ -7,7 +7,7 @@ import com.example.highload.notification.model.network.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "notification")
+@Mapper(componentModel = "spring")
 public interface NotificationMapper {
 
     @Mapping(target = "receiverId", source = "notification.receiverProfileId")

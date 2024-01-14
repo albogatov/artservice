@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "notification", uses = {NotificationMapper.class})
+@Mapper(componentModel = "spring", uses = {NotificationMapper.class})
 public interface NotificationListMapper {
 
     List<Notification> notificationDtosToNotifications(List<NotificationDto> notificationDtos);

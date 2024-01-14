@@ -1,5 +1,5 @@
 server:
-  port: 8183
+  port: 8184
 spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/highload
