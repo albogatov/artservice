@@ -39,12 +39,10 @@ public class AdminServiceImpl implements AdminService {
             for (UserDto user :
                     usersToDelete.getContent()) {
 
-                //TODO Call to profile/image service
                 if (user.getProfileId() != null) {
                     imageService.removeAllImagesForProfile(user.getProfileId(), token);
                 }
 
-                //TODO Call to order/image service
                 List<OrderDto> orders = orderServiceFeignClient.getAllUserOrders(user.getId(), token).getBody();
                 if (!orders.isEmpty())
                     orders.forEach(order -> {

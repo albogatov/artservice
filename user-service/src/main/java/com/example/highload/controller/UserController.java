@@ -23,17 +23,6 @@ public class UserController {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    //TODO Move to profile service
-//    @PostMapping("/profile/add/{userId}")
-//    public ResponseEntity<?> addProfile(@Valid @RequestBody ProfileDto profile, @PathVariable int userId) {
-//
-//        if (profileService.findByUserIdElseNull(userId) == null) {
-//            profileService.saveProfileForUser(profile, userId);
-//            return new ResponseEntity<>("Profile successfully added", HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>("Profile already added", HttpStatus.BAD_REQUEST);
-//    }
-
     @GetMapping("/findLogin/{login}")
     ResponseEntity<UserDto> findByLoginElseNull(@PathVariable String login) {
         return ResponseEntity.ok(userMapper.userToDto(userService.findByLoginElseNull(login)));
@@ -44,7 +33,6 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToDto(userService.findById(id)));
     }
 
-    // TODO What is the use case here?
     @PostMapping("/save")
     ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) {
         User user = userService.save(userMapper.userDtoToUser(userDto));

@@ -38,7 +38,6 @@ public class ImageObjectController {
         return ResponseEntity.ok("Images added");
     }
 
-    // TODO Move to image service
     @GetMapping("/single/{orderId}/images/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
     public ResponseEntity<?> getOrderImages(@Valid @PathVariable int orderId, @PathVariable int page) {

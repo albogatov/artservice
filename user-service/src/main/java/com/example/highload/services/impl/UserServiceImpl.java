@@ -54,7 +54,6 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteAllByIsActualFalseAndWhenDeletedTimeLessThan(dateTimeLTDelete);
     }
 
-    // TODO What is the use case here?
     @Override
     public User save(User user) {
         user.getRole().setId(roleRepository.findByName(user.getRole().getName()).orElseThrow().getId());
