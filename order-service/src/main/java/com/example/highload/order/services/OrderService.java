@@ -34,6 +34,4 @@ public interface OrderService {
     Mono<OrderDto> addTagsToOrder(List<Integer> tagIds, int orderId);
 
     Mono<OrderDto> deleteTagsFromOrder(List<Integer> tagIds, int orderId);
-
-    void removeTagFromOrder(int tagId, int orderId);
 }
