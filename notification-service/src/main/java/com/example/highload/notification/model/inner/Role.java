@@ -1,19 +1,18 @@
 package com.example.highload.notification.model.inner;
 
 import com.example.highload.notification.model.enums.RoleType;
-import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Entity
 @Table(name = "role", schema = "public")
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "name", nullable = false)
+    @Column("name")
     private RoleType name;
 }

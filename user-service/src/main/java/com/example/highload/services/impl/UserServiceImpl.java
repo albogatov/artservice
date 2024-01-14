@@ -6,6 +6,7 @@ import com.example.highload.model.network.UserDto;
 import com.example.highload.repos.RoleRepository;
 import com.example.highload.repos.UserRepository;
 import com.example.highload.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,12 +50,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByIsActualFalseAndWhenDeletedTimeLessThan(dateTimeLTDelete, pageable).orElse(Page.empty());
     }
 
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {Exception.class})
     @Override
     public void deleteAllExpired(LocalDateTime dateTimeLTDelete) {
         userRepository.deleteAllByIsActualFalseAndWhenDeletedTimeLessThan(dateTimeLTDelete);
     }
 
-    // TODO What is the use case here?
     @Override
     public User save(User user) {
         user.getRole().setId(roleRepository.findByName(user.getRole().getName()).orElseThrow().getId());

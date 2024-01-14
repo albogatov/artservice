@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -21,16 +24,32 @@ public class JwtTokenUtil {
     @Value("${jwt.expired}")
     private String timeExpired;
 
-    public String generateAccessToken(String login) {
+    public String generateAccessToken(String login, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", role);
+
         Date date = Date.from(LocalDate.now()
                 .plusDays(Integer.parseInt(timeExpired))
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant());
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(login)
                 .setExpiration(date)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+    }
+
+    private Claims getClaimsFromToken(String token){
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public List<String> getRoleFromJwtToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return List.of(claims.get("roles", String.class));
     }
 
     public boolean validateToken(String token) {

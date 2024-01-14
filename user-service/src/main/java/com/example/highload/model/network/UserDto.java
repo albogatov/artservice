@@ -16,6 +16,7 @@ public class UserDto implements Serializable {
     private String login;
     @NotBlank
     private String password;
+    private Integer profileId;
     private RoleType role;
 
 }

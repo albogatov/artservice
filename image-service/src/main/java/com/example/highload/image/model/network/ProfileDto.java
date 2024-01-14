@@ -1,0 +1,23 @@
+package com.example.highload.image.model.network;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+
+import java.io.Serializable;
+
+@Data
+public class ProfileDto implements Serializable {
+
+    private int id;
+    private int userId;
+    private ImageDto image;
+    @NotBlank
+    private String name;
+    private String experience;
+    private String education;
+    private String about;
+    @NotBlank
+    @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{1,4}$")
+    private String mail;
+}

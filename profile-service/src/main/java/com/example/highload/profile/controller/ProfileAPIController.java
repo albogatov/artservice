@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -40,6 +41,15 @@ public class ProfileAPIController {
 //        return ResponseEntity.ok("Profile edited");
 //    }
 
+    @PostMapping("/profile/add/{userId}")
+    public ResponseEntity<?> addProfile(@Valid @RequestBody ProfileDto profile, @PathVariable int userId) {
+
+        if (profileService.findByUserIdElseNull(userId) == null) {
+            profileService.saveProfileForUser(profile, userId);
+            return new ResponseEntity<>("Profile successfully added", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Profile already added", HttpStatus.BAD_REQUEST);
+    }
     @PostMapping("/edit")
     public ResponseEntity<?> edit(@Valid @RequestBody ProfileDto data) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -61,18 +71,6 @@ public class ProfileAPIController {
         Profile entity = profileService.findById(id);
         return ResponseEntity.ok(dataTransformer.profileToDto(entity));
     }
-
-    // TODO Should this be moved to image service? I moved it for now
-//    @GetMapping("/single/{id}/images/{page}")
-//    public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {
-//        Profile entity = profileService.findById(id);
-//        Pageable pageable = PageRequest.of(page, 50);
-//        // TODO Pageable to feign client, how?
-//        //Page<Image> images = imageService.findAllProfileImages(id, pageable);
-//        Page<Image> images = imageService.findAllProfileImages(id, page).getBody();
-//        HttpHeaders responseHeaders = paginationHeadersCreator.pageWithTotalElementsHeadersCreate(images);
-//        return ResponseEntity.ok().headers(responseHeaders).body(dataTransformer.imageListToDto(images.getContent()));
-//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions() {

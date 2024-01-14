@@ -26,6 +26,15 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     @Override
+    public Mono<ResponseDto> approve(Integer id) {
+        Mono<Response> response = Mono.just(responseRepository.findById(id).orElseThrow());
+        return response.map(res -> {
+            res.setIsApproved(true);
+            return responseRepository.save(res);
+        }).map(responseMapper::responseToDto);
+    }
+
+    @Override
     public Flux<ResponseDto> findAllForOrder(int orderId) {
         return Flux.fromIterable(responseRepository.findAllByOrder_Id(orderId).orElseThrow()).map(responseMapper::responseToDto);
     }

@@ -15,7 +15,5 @@ public interface TagService {
 
     Flux<TagDto> findAll();
 
-    void removeTagFromOrder(int tagId, int orderId);
-
     Mono<TagDto> findById(Integer tagIdToAdd);
 }

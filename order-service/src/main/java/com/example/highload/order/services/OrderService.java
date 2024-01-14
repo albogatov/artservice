@@ -13,9 +13,13 @@ public interface OrderService {
 
     Mono<OrderDto> saveOrder(OrderDto orderDto);
 
+    Mono<ClientOrder> saveOrder(ClientOrder order);
+
     Mono<OrderDto> updateOrder(OrderDto orderDto, int id);
 
     Mono<OrderDto> getOrderById(int id);
+
+    Mono<ClientOrder> findById(int id);
 
     Flux<OrderDto> getUserOrders(int userId);
 

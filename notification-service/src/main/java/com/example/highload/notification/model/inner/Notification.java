@@ -1,31 +1,34 @@
 package com.example.highload.notification.model.inner;
 
-import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
 @Data
-@Entity
 @Table(name = "notification", schema = "public")
 public class Notification {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //TODO Add profile here or replace with Int
-    @ManyToOne
-    @JoinColumn(name = "sender_profile_id", referencedColumnName = "id")
     private Profile senderProfile;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_profile_id", referencedColumnName = "id")
     private Profile receiverProfile;
 
-    @Column(name = "is_read", nullable = false)
+    @Column("sender_profile_id")
+    private Integer senderProfileId;
+
+    @Column("receiver_profile_id")
+    private Integer receiverProfileId;
+
+    @Column("is_read")
     private Boolean isRead;
 
-    @Column(name = "time", columnDefinition = "TIMESTAMP", nullable = false)
+    @Column("time")
     private LocalDateTime time;
 
 }
