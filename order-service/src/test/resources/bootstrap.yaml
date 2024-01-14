@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: login-service
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      client:
+        simple:
+          instances:
+            login-service[0]:
+              uri: http://localhost:80
+            user-service[0]:
+              uri: http://localhost:81
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/highload
+    username: high_user
+    password: high_user
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+  liquibase:
+    change-log: classpath:db/changelog/master-changelog.yaml
+    enabled: true
+    drop-first: false
+    default-schema: public
+eureka:
+  client:
+    enabled: false
+admin:
+  login: admin1
+  password: admin1
+  role: ADMIN
+artist:
+  login: artist1
+  password: artist1
+  role: ARTIST
+client:
+  login: client1
+  password: client1
+  role: CLIENT
+jwt:
+  secret: "ereboging"
+  expired: 84600
+pagination:
+  maxSize: "50"

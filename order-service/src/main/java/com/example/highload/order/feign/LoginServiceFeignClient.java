@@ -15,7 +15,4 @@ public interface LoginServiceFeignClient {
 
     @PostMapping("/api/auth/get-login-from-token")
     ResponseEntity<String> getLoginFromToken(String token);
-
-    @PostMapping("/api/auth/details")
-    ResponseEntity<UserDetailsService> details();
 }
