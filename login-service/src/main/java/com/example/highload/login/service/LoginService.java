@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface LoginService {
 
-    String login(String login, String password);
+    String login(String login, String password, String role);
 
     User findByLoginElseNull(String login);
 

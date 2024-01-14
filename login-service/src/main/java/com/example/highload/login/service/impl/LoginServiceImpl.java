@@ -21,9 +21,9 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public String login(String login, String password) {
+    public String login(String login, String password, String role) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
-        return jwtTokenUtil.generateAccessToken(login);
+        return jwtTokenUtil.generateAccessToken(login, role);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class LoginController {
         if (user.getLogin() == null || user.getPassword() == null) {
             return new ResponseEntity<>("Absent login or password", HttpStatus.BAD_REQUEST);
         }
-        String jwt = loginService.login(user.getLogin(), user.getPassword());
+        String jwt = loginService.login(user.getLogin(), user.getPassword(), user.getRole().toString());
         JwtResponse response = JwtResponse.builder().token(jwt)
                 .userId(loginService.findByLoginElseNull(user.getLogin()).getId()).build();
         return ResponseEntity.ok(response);
