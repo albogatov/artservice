@@ -28,10 +28,18 @@ public class ResponseController {
     private final ResponseService responseService;
 
     @PostMapping("/save")
+    @PreAuthorize("hasAnyAuthority('ARTIST')")
     public ResponseEntity<?> save(@Valid @RequestBody ResponseDto data) {
         if(responseService.saveResponse(data) != null)
             return ResponseEntity.ok("Response added");
         else return ResponseEntity.badRequest().body("Couldn't save response, check data");
+    }
+
+    @PostMapping("/approve/{responseId}")
+    @PreAuthorize("hasAnyAuthority('CLIENT')")
+    public ResponseEntity<Mono<ResponseDto>> approve(@PathVariable int responseId) {
+        Mono<ResponseDto> response = responseService.approve(responseId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/all/order/{orderId}")

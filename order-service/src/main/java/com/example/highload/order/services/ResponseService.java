@@ -13,6 +13,8 @@ public interface ResponseService {
 
     Mono<ResponseDto> saveResponse(ResponseDto responseDto);
 
+    Mono<ResponseDto> approve(Integer id);
+
     Flux<ResponseDto> findAllForOrder(int orderId);
 
     Flux<ResponseDto> findAllForUser(int userId);
