@@ -2,8 +2,7 @@ server:
   port: 8184
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/highload
-    #url: r2dbc:postgresql://postgres:5432/airline
+    url: r2dbc:postgresql://postgres:5432/highload
     username: high_user
     password: high_user
     pool:
@@ -16,7 +15,7 @@ spring:
     hikari:
       maximum-pool-size: 50
       connection-timeout: 6000
-    url: jdbc:postgresql://localhost:5432/highload
+    url: jdbc:postgresql://postgres:5432/highload
     username: high_user
     password: high_user
     driver-class-name: org.postgresql.Driver
@@ -28,7 +27,7 @@ eureka:
   client:
     serviceUrl:
       #defaultZone: http://eureka:8761/eureka/
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka:8761/eureka/
 jwt:
   secret: ereboging
   expired: 84600

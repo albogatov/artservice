@@ -118,3 +118,51 @@ services:
     depends_on:
       - login-service
       - user-service
+
+  image-service:
+    image: image-service:latest
+    container_name: image-service
+    environment:
+      - 'PAGINATION_MAX_SIZE=50'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84600'
+    build:
+      context: ./image-service
+      dockerfile: Dockerfile
+    ports:
+      - "8185:8185"
+    depends_on:
+      - login-service
+      - user-service
+
+  notification-service:
+    image: notification-service:latest
+    container_name: notification-service
+    environment:
+      - 'PAGINATION_MAX_SIZE=50'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84600'
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "8184:8184"
+    depends_on:
+      - login-service
+      - user-service
+
+  profile-service:
+    image: profile-service:latest
+    container_name: profile-service
+    environment:
+      - 'PAGINATION_MAX_SIZE=50'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84600'
+    build:
+      context: ./profile-service
+      dockerfile: Dockerfile
+    ports:
+      - "8186:8186"
+    depends_on:
+      - login-service
+      - user-service
