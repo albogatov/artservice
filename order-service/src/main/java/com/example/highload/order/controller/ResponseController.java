@@ -28,7 +28,7 @@ public class ResponseController {
     private final ResponseService responseService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@Valid @RequestBody ResponseDto data){
+    public ResponseEntity<?> save(@Valid @RequestBody ResponseDto data) {
         if(responseService.saveResponse(data) != null)
             return ResponseEntity.ok("Response added");
         else return ResponseEntity.badRequest().body("Couldn't save response, check data");
@@ -36,19 +36,19 @@ public class ResponseController {
 
     @GetMapping("/all/order/{orderId}")
     @PreAuthorize("hasAnyAuthority('ARTIST', 'CLIENT')")
-    public ResponseEntity<Flux<ResponseDto>> getAllByOrder(@PathVariable int orderId, @PathVariable int page){
+    public ResponseEntity<Flux<ResponseDto>> getAllByOrder(@PathVariable int orderId) {
         return ResponseEntity.ok().body(responseService.findAllForOrder(orderId));
     }
 
     @GetMapping("/all/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ARTIST')")
-    public ResponseEntity<Flux<ResponseDto>> getAllByUser(@PathVariable int userId, @PathVariable int page){
+    public ResponseEntity<Flux<ResponseDto>> getAllByUser(@PathVariable int userId) {
         return ResponseEntity.ok().body(responseService.findAllForUser(userId));
     }
 
     @GetMapping("/single/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<Mono<ResponseDto>> getById(@PathVariable int id){
+    public ResponseEntity<Mono<ResponseDto>> getById(@PathVariable int id) {
         return ResponseEntity.ok(responseService.findById(id));
     }
 

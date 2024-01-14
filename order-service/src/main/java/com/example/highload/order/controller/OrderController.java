@@ -87,15 +87,15 @@ public class OrderController {
         return ResponseEntity.ok().body(orderService.getOrdersByTags(tags));
     }
 
-    @GetMapping("/open/tag/{page}")
+    @GetMapping("/open/tag")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<Flux<OrderDto>> getAllOpenOrdersByTags(@Valid @RequestBody List<Integer> tags, @PathVariable int page) {
+    public ResponseEntity<Flux<OrderDto>> getAllOpenOrdersByTags(@Valid @RequestBody List<Integer> tags) {
         return ResponseEntity.ok().body(orderService.getOpenOrdersByTags(tags));
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<Flux<OrderDto>> getAllOrders(@PathVariable int page) {
+    public ResponseEntity<Flux<OrderDto>> getAllOrders() {
         return ResponseEntity.ok().body(orderService.getAllOrders());
     }
 
