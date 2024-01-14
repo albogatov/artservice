@@ -1,5 +1,13 @@
 package com.example.highload.image.services.impl;
 
+import com.example.highload.image.feign.OrderServiceFeignClient;
+import com.example.highload.image.feign.ProfileServiceFeignClient;
+import com.example.highload.image.mapper.ImageMapper;
+import com.example.highload.image.mapper.OrderMapper;
+import com.example.highload.image.mapper.ProfileMapper;
+import com.example.highload.image.model.inner.ClientOrder;
+import com.example.highload.image.model.inner.Profile;
+import com.example.highload.image.model.network.OrderDto;
 import com.example.highload.image.services.ImageService;
 import com.example.highload.image.model.enums.ImageObjectType;
 import com.example.highload.image.model.inner.Image;
@@ -8,7 +16,6 @@ import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.repos.ImageObjectRepository;
 import com.example.highload.image.repos.ImageRepository;
 import com.example.highload.image.services.ImageService;
-import com.example.highload.utils.DataTransformer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,13 +29,16 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
 
-    private final OrderService orderService;
-    private final ProfileService profileService;
+    private final OrderServiceFeignClient orderService;
+    private final ProfileServiceFeignClient profileService;
 
     private final ImageRepository imageRepository;
+    private final ImageMapper imageMapper;
     private final ImageObjectRepository imageObjectRepository;
 
-    private final DataTransformer dataTransformer;
+    private final OrderMapper orderMapper;
+    private final ProfileMapper profileMapper;
+
 
     @Override
     public Page<Image> findAllProfileImages(int profileId, Pageable pageable) {
@@ -42,14 +52,14 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image saveImage(ImageDto imageDto) {
-        return imageRepository.save(dataTransformer.imageFromDto(imageDto));
+        return imageRepository.save(imageMapper.imageDtoToImage(imageDto));
     }
 
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
-    public List<Image> saveImagesForOrder(List<ImageDto> imageDtos, int orderId) {
-        ClientOrder order = orderService.getOrderById(orderId);
-        List<Image> images = imageRepository.saveAll(imageDtos.stream().map(dataTransformer::imageFromDto).toList());
+    public List<Image> saveImagesForOrder(List<ImageDto> imageDtos, int orderId, String token) {
+        ClientOrder order = orderMapper.orderDtoToOrder(orderService.getById(orderId, token).getBody());
+        List<Image> images = imageRepository.saveAll(imageDtos.stream().map(imageMapper::imageDtoToImage).toList());
         List<ImageObject> imageObjects = images.stream().map(image ->
                 {
                     ImageObject imageObject = new ImageObject();
@@ -66,9 +76,9 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
-    public List<Image> saveImageForProfile(List<ImageDto> imageDtos, int profileId) {
-        Profile profile = profileService.findById(profileId);
-        List<Image> images = imageRepository.saveAll(imageDtos.stream().map(dataTransformer::imageFromDto).toList());
+    public List<Image> saveImageForProfile(List<ImageDto> imageDtos, int profileId, String token) {
+        Profile profile = profileMapper.profileDtoToProfile(profileService.getById(profileId, token).getBody());
+        List<Image> images = imageRepository.saveAll(imageDtos.stream().map(imageMapper::imageDtoToImage).toList());
         List<ImageObject> imageObjects = images.stream().map(image ->
                 {
                     ImageObject imageObject = new ImageObject();
@@ -97,12 +107,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void removeAllImagesForProfile(Profile profile) {
-        imageRepository.deleteAllByImageObject_Profile(profile);
+        imageRepository.deleteAllByImageObject_Profile(profile.getId());
     }
 
     @Override
     public void removeAllImagesForOrder(ClientOrder order) {
-        imageRepository.deleteAllByImageObject_Order(order);
+        imageRepository.deleteAllByImageObject_Order(order.getId());
     }
 
     @Override
@@ -114,9 +124,9 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
-    public Image changeMainImageOfProfile(ImageDto imageDto, int profileId) {
-        Image newImage = imageRepository.save(dataTransformer.imageFromDto(imageDto));
-        Image oldImage = profileService.setNewMainImage(profileId, newImage);
+    public Image changeMainImageOfProfile(ImageDto imageDto, int profileId, String token) {
+        Image newImage = imageRepository.save(imageMapper.imageDtoToImage(imageDto));
+        Image oldImage = imageMapper.imageDtoToImage(profileService.setNewMainImage(profileId, imageDto, token).getBody());
         if (oldImage != null) {
             imageRepository.deleteById(oldImage.getId());
         }

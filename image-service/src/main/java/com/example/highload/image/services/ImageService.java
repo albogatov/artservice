@@ -17,9 +17,9 @@ public interface ImageService {
 
     Image saveImage(ImageDto imageDto);
 
-    List<Image> saveImagesForOrder(List<ImageDto> imageDtos, int orderId);
+    List<Image> saveImagesForOrder(List<ImageDto> imageDtos, int orderId, String token);
 
-    List<Image> saveImageForProfile(List<ImageDto> imageDtos, int profileId);
+    List<Image> saveImageForProfile(List<ImageDto> imageDtos, int profileId, String token);
 
     void removeImageForOrder(int imageId, int orderId);
 
@@ -31,6 +31,6 @@ public interface ImageService {
 
     void removeImageForProfile(int imageId, int profileId);
 
-    Image changeMainImageOfProfile(ImageDto imageDto, int profileId);
+    Image changeMainImageOfProfile(ImageDto imageDto, int profileId, String token);
 
 }

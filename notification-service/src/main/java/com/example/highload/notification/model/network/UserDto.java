@@ -16,6 +16,6 @@ public class UserDto implements Serializable {
     private String login;
     @NotBlank
     private String password;
-    private RoleType role; // TODO resolve mapping problem; may add role id
+    private RoleType role;
 
 }
