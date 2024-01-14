@@ -1,7 +1,5 @@
 package com.example.highload.image.model.network;
 
-import com.example.highload.order.model.enums.OrderStatus;
-import com.example.highload.order.model.network.TagDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
