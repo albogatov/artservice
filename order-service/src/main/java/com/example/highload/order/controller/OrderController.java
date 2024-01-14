@@ -53,9 +53,9 @@ public class OrderController {
 
     @GetMapping("/open/user/{userId}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllUserOpenOrders(@PathVariable int userId) {
+    public ResponseEntity<Mono<List<OrderDto>>> getAllUserOpenOrders(@PathVariable int userId) {
         Flux<OrderDto> entityList = orderService.getUserOpenOrders(userId);
-        return ResponseEntity.ok().body(entityList);
+        return ResponseEntity.ok().body(entityList.collectList());
     }
 
     @GetMapping("/single/{orderId}")
@@ -67,22 +67,18 @@ public class OrderController {
 
     @PostMapping("/single/{orderId}/tags/add")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
-    public ResponseEntity<?> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
+    public ResponseEntity<Mono<OrderDto>> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.addTagsToOrder(tagIds, orderId);
-        if (order != null) {
-            return ResponseEntity.ok(order);
-        }
-        return ResponseEntity.badRequest().body("Invalid total tag number (should be not more than 10)!");
+        order.subscribe();
+        return ResponseEntity.ok(order);
     }
 
     @PostMapping("/single/{orderId}/tags/delete")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
-    public ResponseEntity<?> deleteTagsFromOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
+    public ResponseEntity<Mono<OrderDto>> deleteTagsFromOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.deleteTagsFromOrder(tagIds, orderId);
-        if (order != null) {
-            return ResponseEntity.ok(order);
-        }
-        return ResponseEntity.badRequest().body("Invalid tag ids!");
+        order.subscribe();
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping("/all/tag")
