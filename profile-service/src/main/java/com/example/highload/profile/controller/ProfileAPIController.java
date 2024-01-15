@@ -82,13 +82,16 @@ public class ProfileAPIController {
         return ResponseEntity.ok(profileMapper.profileToDto(entity));
     }
 
-    @GetMapping("/single/{id}/exists")
-    public ResponseEntity<Boolean> checkProfileExistsById(@PathVariable int id) {
-        Profile entity = profileService.findByIdOrElseNull(id);
-        if (entity == null) {
-            ResponseEntity.ok(false);
-        }
-        return ResponseEntity.ok(true);
+    @PostMapping("/all/exists")
+    public ResponseEntity<Boolean> checkProfileExistsByIds(@RequestBody List<Integer> ids) {
+        Boolean result = Boolean.valueOf(ids.stream().allMatch(id -> {
+            Profile entity = profileService.findByIdOrElseNull(id);
+            if (entity == null) {
+                return Boolean.FALSE;
+            }
+            return Boolean.TRUE;
+        }));
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/single/{id}/image")

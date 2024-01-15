@@ -7,6 +7,7 @@ import com.example.highload.notification.model.inner.Profile;
 import com.example.highload.notification.model.network.NotificationDto;
 import com.example.highload.notification.repos.NotificationRepository;
 import com.example.highload.notification.services.NotificationService;
+import feign.gson.GsonDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,9 @@ import reactor.core.scheduler.Schedulers;
 
 import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,27 +57,19 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public Mono<Notification> sendNotification(int senderId, int receiverId, String token) {
 
-        return Mono.fromCallable(()->{
+        List<Integer> ids = List.of(senderId, receiverId);
+        return Mono.just(profileServiceFeignClient.checkProfileExistsByIds(ids, token)).map( b -> {
+                    if (b.getBody()) {
+                        Notification notification = new Notification();
+                        notification.setSenderProfileId(senderId);
+                        notification.setReceiverProfileId(receiverId);
+                        notification.setIsRead(false);
+                        notification.setTime(LocalDateTime.now());
+                        return notificationRepository.save(notification).block();
+                    } else throw new NoSuchElementException("Wrong profile id!");
 
-            Flux.just(senderId, receiverId).subscribe(
-                    id -> {
-                        CompletableFuture<Boolean> fut = profileServiceFeignClient.checkProfileExistsById(senderId, token);
-                        fut.thenAccept(val -> {
-                            if (!val) {
-                                throw new NoSuchElementException("Wrong profile id!");
-                            }
-                        });
-                    }
-            );
-
-            Notification notification = new Notification();
-            notification.setSenderProfileId(senderId);
-            notification.setReceiverProfileId(receiverId);
-            notification.setIsRead(false);
-            notification.setTime(LocalDateTime.now());
-            return notification;
-
-        }).flatMap(notificationRepository::save);
+                }
+        );
 
 
     }

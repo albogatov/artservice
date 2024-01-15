@@ -13,10 +13,4 @@ public interface UserServiceFeignClient {
 
     @GetMapping("/api/user/findLogin/{login}")
     ResponseEntity<UserDto> findByLoginElseNull(@PathVariable String login, @RequestHeader("Authorization") String token);
-
-    @GetMapping("/api/user/findId/{id}")
-    ResponseEntity<UserDto> findById(@PathVariable int id, @RequestHeader("Authorization") String token);
-
-    @GetMapping("/api/user/findId/{id}")
-    ResponseEntity<UserDto> findById(@PathVariable int id);
 }

@@ -42,18 +42,18 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .exceptionHandling(config -> config.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .authenticationProvider(daoAuthenticationProvider())
+                //.authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(login -> userMapper.userDtoToUser(userService.findByLoginElseNull(login).getBody()));
-        return daoAuthenticationProvider;
-    }
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider() {
+//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+//        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+//        daoAuthenticationProvider.setUserDetailsService(login -> userMapper.userDtoToUser(userService.findByLoginElseNull(login).getBody()));
+//        return daoAuthenticationProvider;
+//    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {

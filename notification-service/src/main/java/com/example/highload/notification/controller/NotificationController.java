@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,9 +29,10 @@ public class NotificationController {
     private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PostMapping("/send/from-{senderId}/to-{receiverId}")
-    public ResponseEntity<?> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
-        notificationService.sendNotification(senderId, receiverId, token).subscribe();
-        return ResponseEntity.ok("Notification successfully created");
+    public ResponseEntity<Mono<Notification>> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
+        return ResponseEntity.ok(notificationService.sendNotification(senderId, receiverId, token).onErrorResume(t -> {
+            return Mono.error(new NoSuchElementException("Wrong profile id!"));
+        }));
     }
 
     @PostMapping("/update/{id}")
