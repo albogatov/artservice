@@ -14,6 +14,6 @@ import java.util.List;
 @FeignClient("order-service")
 @CircuitBreaker(name = "CbServiceBasedOnCount")
 public interface OrderServiceFeignClient {
-    @GetMapping("/api/order/core/all/user/{userId}")
+    @GetMapping("/api/order/client/all/user/{userId}")
     ResponseEntity<List<OrderDto>> getAllUserOrders(@PathVariable int userId, @RequestHeader("Authorization") String token);
 }

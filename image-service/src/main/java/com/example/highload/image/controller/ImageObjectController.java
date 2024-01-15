@@ -38,7 +38,7 @@ public class ImageObjectController {
         return ResponseEntity.ok("Images added");
     }
 
-    @GetMapping("/single/{orderId}/images/{page}")
+    @GetMapping("/order/single/{orderId}/images/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
     public ResponseEntity<?> getOrderImages(@Valid @PathVariable int orderId, @PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
@@ -97,7 +97,7 @@ public class ImageObjectController {
     }
 
     // This was moved from profile service
-    @GetMapping("/single/{id}/images/{page}")
+    @GetMapping("/profile/single/{id}/images/{page}")
     public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Page<Image> images = imageService.findAllProfileImages(id, pageable);
