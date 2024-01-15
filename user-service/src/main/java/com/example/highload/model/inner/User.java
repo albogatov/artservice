@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @Column(name = "login", nullable = false, unique = true)
     private String login;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade=CascadeType.ALL)
     private Profile profile;
 
     @NotBlank

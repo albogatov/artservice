@@ -17,8 +17,6 @@ public class Profile {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false)
     private User user;
-
-    @NotBlank
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "experience")
@@ -27,8 +25,6 @@ public class Profile {
     private String education;
     @Column(name = "about")
     private String about;
-
-    @NotBlank
     @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{1,4}$")
     @Column(name = "mail", nullable = false)
     private String mail;

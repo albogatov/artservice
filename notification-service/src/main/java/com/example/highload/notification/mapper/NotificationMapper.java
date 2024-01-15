@@ -10,9 +10,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
 
-    @Mapping(target = "receiverId", source = "notification.receiverProfileId")
-    @Mapping(target = "senderId", source = "notification.senderProfileId")
-    @Mapping(target = "senderMail", source = "notification.senderProfile.mail")
+    @Mapping(target = "receiverId", source = "receiverProfileId")
+    @Mapping(target = "senderId", source = "senderProfileId")
+    @Mapping(target = "senderMail", source = "senderProfile.mail")
+    @Mapping(target = "read", source = "isRead")
     NotificationDto notificationToNotificationDto(Notification notification);
 
 //    Notification notificationDtoToNotification(NotificationDto notificationDto);

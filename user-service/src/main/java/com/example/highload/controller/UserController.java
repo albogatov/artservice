@@ -51,13 +51,15 @@ public class UserController {
         return new ResponseEntity<>("Profile deactivated", HttpStatus.OK);
     }
 
-    @GetMapping("/findExpired/{expiryTime}/{page}")
-    public ResponseEntity<?> findExpired(@PathVariable LocalDateTime expiryTime, @PathVariable int page) {
-        return ResponseEntity.ok(userService.findAllExpired(expiryTime, page));
+    @GetMapping("/findExpired/{daysToExpire}/{page}")
+    public ResponseEntity<?> findExpired(@PathVariable int daysToExpire, @PathVariable int page) {
+        LocalDateTime expiryTime = LocalDateTime.now().minusDays(daysToExpire);
+        return ResponseEntity.ok(userMapper.userListToDtoList(userService.findAllExpired(expiryTime, page).getContent()));
     }
 
-    @PostMapping("/deleteAllExpired/{expiryTime}")
-    public ResponseEntity<?> deleteAllExpired(@PathVariable LocalDateTime expiryTime) {
+    @PostMapping("/deleteAllExpired/{daysToExpire}")
+    public ResponseEntity<?> deleteAllExpired(@PathVariable int daysToExpire) {
+        LocalDateTime expiryTime = LocalDateTime.now().minusDays(daysToExpire);
         userService.deleteAllExpired(expiryTime);
         return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
     }

@@ -37,11 +37,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Mono<Notification> readNotification(int id) {
-        return notificationRepository.fetchById(id)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("Wrong id!")))
-                .doOnNext(notification -> {
-                    notification.setIsRead(true);
-                }).flatMap(notificationRepository::save);
+        return notificationRepository.setRead(id)
+                .onErrorResume(t -> {
+                    return Mono.error(new NoSuchElementException("Wrong id!"));
+                });
+    }
+
+    @Override
+    public Mono<Notification> findById(int userId) {
+        return notificationRepository.fetchById(userId);
     }
 
     @Override

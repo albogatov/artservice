@@ -7,6 +7,8 @@ import reactor.core.publisher.Mono;
 public interface CustomNotificationRepository {
 
     Mono<Notification> fetchById(Integer id);
+
+    Mono<Notification> setRead(Integer id);
     Flux<Notification> fetchAllByReceiverProfileId(Integer id);
 
     public Flux<Notification> fetchAllNotReadByReceiverProfileId(Integer id);

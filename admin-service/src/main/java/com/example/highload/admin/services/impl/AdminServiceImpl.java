@@ -31,13 +31,13 @@ public class AdminServiceImpl implements AdminService {
     private final UserMapper userMapper;
     @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {Exception.class})
     public void deleteLogicallyDeletedUsers(int daysToExpire, String token) {
-        LocalDateTime dateTimeLTDelete = LocalDateTime.now().minusDays(daysToExpire);
-        Page<UserDto> usersToDelete;
+
+        List<UserDto> usersToDelete;
         int i = 0;
         do {
-            usersToDelete = userServiceFeignClient.findExpired(dateTimeLTDelete, i, token).getBody();
+            usersToDelete = userServiceFeignClient.findExpired(daysToExpire, i, token).getBody();
             for (UserDto user :
-                    usersToDelete.getContent()) {
+                    usersToDelete) {
 
                 if (user.getProfileId() != null) {
                     imageService.removeAllImagesForProfile(user.getProfileId(), token);
@@ -50,9 +50,9 @@ public class AdminServiceImpl implements AdminService {
                     });
             }
             i++;
-        } while (usersToDelete.getContent().size() > 0);
+        } while (usersToDelete.size() > 0);
 
-        userServiceFeignClient.deleteAllExpired(dateTimeLTDelete, token);
+        userServiceFeignClient.deleteAllExpired(daysToExpire, token);
 
     }
 
