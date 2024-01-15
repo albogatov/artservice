@@ -11,6 +11,6 @@ public interface ReviewService {
 
     Review findById(int id);
 
-    Review saveReview(ReviewDto reviewDto);
+    Review saveReview(ReviewDto reviewDto, String token);
 
 }

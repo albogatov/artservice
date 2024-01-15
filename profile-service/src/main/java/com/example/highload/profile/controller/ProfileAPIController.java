@@ -47,9 +47,9 @@ public class ProfileAPIController {
         return new ResponseEntity<>("Profile already added", HttpStatus.BAD_REQUEST);
     }
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> edit(@Valid @RequestBody ProfileDto data, @PathVariable int id) {
+    public ResponseEntity<?> edit(@Valid @RequestBody ProfileDto data, @PathVariable int id, @RequestHeader(value = "Authorization") String token) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserDto user = userService.findByLoginElseNull(login).getBody();
+        UserDto user = userService.findByLoginElseNull(login, token).getBody();
         if (user != null) {
             int userId = user.getId();
             if (data.getUserId() == userId) {
@@ -70,6 +70,12 @@ public class ProfileAPIController {
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
 
+    @GetMapping("/user/single/{userId}")
+    public ResponseEntity<?> findByUserId(@PathVariable int userId) {
+        Profile profile = profileService.findByUserIdElseNull(userId);
+        return ResponseEntity.ok().body(profileMapper.profileToDto(profile));
+    }
+
     @GetMapping("/single/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         Profile entity = profileService.findById(id);
@@ -85,7 +91,7 @@ public class ProfileAPIController {
         return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/single/{id}/image")
+    @PostMapping("/single/{id}/image")
     public ResponseEntity<ImageDto> setNewMainImage(@PathVariable int id, @RequestBody ImageDto imageDto) {
         Image old = profileService.setNewMainImage(id, imageMapper.imageDtoToImage(imageDto));
         return ResponseEntity.ok(imageMapper.imageToDto(old));

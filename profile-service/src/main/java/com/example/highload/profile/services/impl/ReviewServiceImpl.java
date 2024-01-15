@@ -1,5 +1,6 @@
 package com.example.highload.profile.services.impl;
 
+import com.example.highload.profile.feign.UserServiceFeignClient;
 import com.example.highload.profile.mapper.ReviewMapper;
 import com.example.highload.profile.model.inner.Review;
 import com.example.highload.profile.model.network.ReviewDto;
@@ -16,6 +17,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
+    private final UserServiceFeignClient userService;
 
     @Override
     public Page<Review> findAllProfileReviews(int profileId, Pageable pageable) {
@@ -28,7 +30,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review saveReview(ReviewDto reviewDto) {
-        return reviewRepository.save(reviewMapper.reviewDtoToReview(reviewDto));
+    public Review saveReview(ReviewDto reviewDto, String token) {
+        Review review = reviewMapper.reviewDtoToReview(reviewDto);
+        review.getUser().setId(userService.findByLoginElseNull(review.getUser().getLogin(), token).getBody().getId());
+        return reviewRepository.save(review);
     }
 }
