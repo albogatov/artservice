@@ -11,8 +11,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Mapping(target = "profileId", source = "profile.id")
     UserDto userToDto(User user);
 
+    @Mapping(source = "profileId", target = "profile.id")
     @Mapping(source = "password", target = "hashPassword")
     User userDtoToUser(UserDto userDto);
 

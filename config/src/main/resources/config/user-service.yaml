@@ -27,4 +27,3 @@ jwt:
   expired: 84600
 pagination:
   maxSize: 50
-

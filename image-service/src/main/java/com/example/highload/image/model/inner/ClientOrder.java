@@ -33,12 +33,6 @@ public class ClientOrder {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToMany
-    @JoinTable(
-            name = "order_tags",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
-
     @OneToMany(mappedBy = "order")
     private List<ImageObject> images;
 

@@ -105,12 +105,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void removeAllImagesForProfile(Integer profileId) {
-        imageRepository.deleteAllByImageObject_Profile(profileId);
+        imageRepository.deleteAllByImageObject_ProfileId(profileId);
     }
 
     @Override
     public void removeAllImagesForOrder(Integer orderId) {
-        imageRepository.deleteAllByImageObject_Order(orderId);
+        imageRepository.deleteAllByImageObject_OrderId(orderId);
     }
 
     @Override
