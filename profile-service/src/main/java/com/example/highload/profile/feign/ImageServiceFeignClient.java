@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.awt.*;
 
-@FeignClient("login-service")
+@FeignClient("image-service")
 public interface ImageServiceFeignClient {
     @GetMapping("/api/image/findAllProfile/{id}/{page}")
     ResponseEntity<Page<Image>> findAllProfileImages(int id, int page);

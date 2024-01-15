@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProfileService {
 
@@ -15,6 +16,8 @@ public interface ProfileService {
     Profile editProfile(ProfileDto profileDto, int id);
 
     Profile findById(int id);
+
+    Profile findByIdOrElseNull(int id);
 
     Profile findByUserIdElseNull(int userId);
 

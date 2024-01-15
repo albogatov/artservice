@@ -1,13 +1,11 @@
 package com.example.highload.profile.services.impl;
 
+import com.example.highload.profile.mapper.ProfileMapper;
 import com.example.highload.profile.model.inner.Image;
 import com.example.highload.profile.model.inner.Profile;
 import com.example.highload.profile.model.network.ProfileDto;
 import com.example.highload.profile.services.ProfileService;
-import com.example.highload.profile.repos.ImageRepository;
 import com.example.highload.profile.repos.ProfileRepository;
-import com.example.highload.profile.services.ProfileService;
-import com.example.highload.profile.utils.DataTransformer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,12 +16,12 @@ import org.springframework.stereotype.Service;
 public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
-    private final DataTransformer dataTransformer;
+    private final ProfileMapper profileMapper;
 
     @Override
     public Profile saveProfileForUser(ProfileDto profileDto, int userId) {
         profileDto.setUserId(userId);
-        return profileRepository.save(dataTransformer.profileFromDto(profileDto));
+        return profileRepository.save(profileMapper.profileDtoToProfile(profileDto));
     }
 
     @Override
@@ -41,6 +39,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile findById(int id) {
         return profileRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public Profile findByIdOrElseNull(int id) {
+        return profileRepository.findById(id).orElse(null);
     }
 
     @Override

@@ -15,6 +15,8 @@ public interface NotificationService {
 
     Mono<Notification> readNotification(int id);
 
+    Mono<Notification> findById(int userId);
+
     Flux<Notification> getAllUserNotifications(int userId);
 
     Flux<Notification> getNewUserNotifications(int userId);

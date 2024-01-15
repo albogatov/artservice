@@ -34,8 +34,8 @@ public class ReviewController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
-    public ResponseEntity<?> save(@Valid @RequestBody ReviewDto data){
-        if(reviewService.saveReview(data) != null)
+    public ResponseEntity<?> save(@Valid @RequestBody ReviewDto data, @RequestHeader(value = "Authorization") String token){
+        if(reviewService.saveReview(data, token) != null)
             return ResponseEntity.ok("");
         else return ResponseEntity.badRequest().body("Couldn't save review, check data");
     }

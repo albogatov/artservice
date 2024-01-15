@@ -23,6 +23,11 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
             join profile as r_profile on notification.receiver_profile_id = r_profile.id
             """;
 
+    private final String updateQuery = """
+            update
+            notification set is_read = true where id = :id
+            """;
+
     public CustomNotificationRepositoryImpl(DatabaseClient client) {
         this.client = client;
     }
@@ -39,12 +44,25 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
     }
 
     @Override
+    public Mono<Notification> setRead(Integer id) {
+        Mono<Notification> notification = fetchById(id);
+        NotificationDBMapper mapper = new NotificationDBMapper();
+        return client
+                .sql(updateQuery)
+                .bind("id", id)
+                .fetch().first().thenReturn(notification.map(n -> {
+                    n.setIsRead(true);
+                    return n;
+                })).block();
+    }
+
+    @Override
     public Flux<Notification> fetchAllByReceiverProfileId(Integer id) {
         NotificationDBMapper mapper = new NotificationDBMapper();
         String selectByReceiverId = String.format("%s where notification.receiver_profile_id = :profileId;", selectQuery);
         return client
                 .sql(selectByReceiverId)
-                .bind("notificationId", id)
+                .bind("profileId", id)
                 .map(mapper::apply)
                 .all();
     }
@@ -55,7 +73,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         String selectByReceiverId = String.format("%s where notification.receiver_profile_id = :profileId and notification.is_read = false;", selectQuery);
         return client
                 .sql(selectByReceiverId)
-                .bind("notificationId", id)
+                .bind("profileId", id)
                 .map(mapper::apply)
                 .all();
     }

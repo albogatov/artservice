@@ -32,9 +32,9 @@ public class NotificationDBMapper implements BiFunction<Row, Object, Notificatio
         Notification notification = new Notification();
         notification.setId(id);
         notification.setSenderProfile(senderProfile);
-        notification.setSenderProfile(receiverProfile);
+        notification.setReceiverProfile(receiverProfile);
         notification.setSenderProfileId(sp_id);
-        notification.setSenderProfileId(rp_id);
+        notification.setReceiverProfileId(rp_id);
         notification.setIsRead(is_read);
         notification.setTime(localDateTime);
 

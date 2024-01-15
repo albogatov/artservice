@@ -14,7 +14,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     Optional<Page<Image>> findAllByImageObject_Order_Id(Integer orderId, Pageable pageable);
     Optional<Page<Image>> findAllByImageObject_Profile_Id(Integer profileId, Pageable pageable);
 
-    void deleteAllByImageObject_Order(Integer orderId);
-    void deleteAllByImageObject_Profile(Integer profileId);
+    void deleteAllByImageObject_OrderId(Integer orderId);
+    void deleteAllByImageObject_ProfileId(Integer profileId);
 
 }

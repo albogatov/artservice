@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @FeignClient("user-service")
 @CircuitBreaker(name = "CbServiceBasedOnCount")
@@ -22,11 +23,11 @@ public interface UserServiceFeignClient {
     ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto, @RequestHeader("Authorization") String token);
 
     @PostMapping("/api/user/deleteId/{id}")
-    ResponseEntity<?> deleteUser(@PathVariable int id, @RequestHeader("Authorization") String token);
+    ResponseEntity<String> deleteUser(@PathVariable int id, @RequestHeader("Authorization") String token);
 
-    @GetMapping("/api/user/findExpired/{expiryTime}/{page}")
-    ResponseEntity<Page<UserDto>> findExpired(@PathVariable LocalDateTime expiryTime, int page, @RequestHeader("Authorization") String token);
+    @GetMapping("/api/user/findExpired/{daysToExpire}/{page}")
+    ResponseEntity<List<UserDto>> findExpired(@PathVariable int daysToExpire, @PathVariable int page, @RequestHeader("Authorization") String token);
 
-    @PostMapping("/api/user/deleteAllExpired/{expiryTime}")
-    ResponseEntity<Page<UserDto>> deleteAllExpired(@PathVariable LocalDateTime expiryTime, @RequestHeader("Authorization") String token);
+    @PostMapping("/api/user/deleteAllExpired/{daysToExpire}")
+    ResponseEntity<String> deleteAllExpired(@PathVariable int daysToExpire, @RequestHeader("Authorization") String token);
 }

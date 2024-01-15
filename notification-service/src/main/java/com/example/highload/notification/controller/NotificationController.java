@@ -1,5 +1,6 @@
 package com.example.highload.notification.controller;
 
+import com.example.highload.notification.mapper.NotificationMapper;
 import com.example.highload.notification.model.inner.Notification;
 import com.example.highload.notification.model.network.NotificationDto;
 import com.example.highload.notification.services.NotificationService;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,37 +27,40 @@ import java.util.NoSuchElementException;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final NotificationMapper notificationMapper;
     private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PostMapping("/send/from-{senderId}/to-{receiverId}")
-    public ResponseEntity<?> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
-        notificationService.sendNotification(senderId, receiverId, token).subscribe();
-        return ResponseEntity.ok("Notification successfully created");
+    public ResponseEntity<Mono<NotificationDto>> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
+        return ResponseEntity.ok(notificationService.sendNotification(senderId, receiverId, token).flatMap(notification -> {
+            return notificationService.findById(notification.getId());
+        }).map(notificationMapper::notificationToNotificationDto).onErrorResume(t -> {
+            return Mono.error(new NoSuchElementException("Wrong profile id!"));
+        }));
     }
 
     @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> setRead(@PathVariable int id){
-        notificationService.readNotification(id).subscribe();
-        return ResponseEntity.ok("Notification status is set");
+    public ResponseEntity<Mono<NotificationDto>> setRead(@PathVariable int id){
+        return ResponseEntity.ok(notificationService.readNotification(id).map(notificationMapper::notificationToNotificationDto));
     }
 
     @GetMapping("/all/{userId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getAllQueries(@PathVariable int userId) {
+    public ResponseEntity<Flux<NotificationDto>> getAllQueries(@PathVariable int userId) {
 
         Flux<Notification> entityList = notificationService.getAllUserNotifications(userId);
-        return ResponseEntity.ok().body(entityList);
+        return ResponseEntity.ok().body(entityList.map(notificationMapper::notificationToNotificationDto));
 
     }
 
 
     @GetMapping("/new/{userId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
-    public ResponseEntity<?> getNewQueries(@PathVariable int userId) {
+    public ResponseEntity<Flux<NotificationDto>> getNewQueries(@PathVariable int userId) {
 
         Flux<Notification> entityList = notificationService.getNewUserNotifications(userId);
-        return ResponseEntity.ok().body(entityList);
+        return ResponseEntity.ok().body(entityList.map(notificationMapper::notificationToNotificationDto));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
