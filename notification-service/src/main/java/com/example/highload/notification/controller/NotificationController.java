@@ -5,12 +5,15 @@ import com.example.highload.notification.model.inner.Notification;
 import com.example.highload.notification.model.network.NotificationDto;
 import com.example.highload.notification.services.NotificationService;
 import com.example.highload.notification.utils.PaginationHeadersCreator;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,11 +35,7 @@ public class NotificationController {
 
     @PostMapping("/send/from-{senderId}/to-{receiverId}")
     public ResponseEntity<Mono<NotificationDto>> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
-        return ResponseEntity.ok(notificationService.sendNotification(senderId, receiverId, token).flatMap(notification -> {
-            return notificationService.findById(notification.getId());
-        }).map(notificationMapper::notificationToNotificationDto).onErrorResume(t -> {
-            return Mono.error(new NoSuchElementException("Wrong profile id!"));
-        }));
+        return ResponseEntity.ok(notificationService.sendNotification(senderId, receiverId, token).map(notificationMapper::notificationToNotificationDto));
     }
 
     @PostMapping("/update/{id}")
@@ -64,12 +63,17 @@ public class NotificationController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(){
-        return ResponseEntity.badRequest().body("Request body validation failed!");
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex){
+        return ResponseEntity.badRequest().body("Request body validation failed! " + ex.getLocalizedMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleServiceExceptions(){
         return ResponseEntity.badRequest().body("Wrong ids in path!");
+    }
+
+    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
+    public ResponseEntity<?> handleExternalServiceExceptions() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
     }
 }

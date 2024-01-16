@@ -256,7 +256,7 @@ public class OrderServiceTest {
 
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals("Request body validation failed!", response2.body().asString()),
+                () -> Assertions.assertTrue(response2.body().asString().contains("Request body validation failed!")),
                 () -> Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response2.statusCode())
         );
     }
@@ -313,7 +313,7 @@ public class OrderServiceTest {
 
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals("Request body validation failed!", response2.body().asString()),
+                () -> Assertions.assertTrue(response2.body().asString().contains("Request body validation failed!")),
                 () -> Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response2.statusCode())
         );
     }

@@ -62,18 +62,22 @@ public class NotificationServiceImpl implements NotificationService {
     public Mono<Notification> sendNotification(int senderId, int receiverId, String token) {
 
         List<Integer> ids = List.of(senderId, receiverId);
-        return Mono.just(profileServiceFeignClient.checkProfileExistsByIds(ids, token)).map( b -> {
+        return Mono.just(profileServiceFeignClient.checkProfileExistsByIds(ids, token)).flatMap( b -> {
                     if (b.getBody()) {
                         Notification notification = new Notification();
                         notification.setSenderProfileId(senderId);
                         notification.setReceiverProfileId(receiverId);
                         notification.setIsRead(false);
                         notification.setTime(LocalDateTime.now());
-                        return notificationRepository.save(notification).block();
+                        return notificationRepository.save(notification);
                     } else throw new NoSuchElementException("Wrong profile id!");
 
                 }
-        );
+        ).flatMap(notification -> {
+            return findById(notification.getId());
+        }).onErrorResume(t -> {
+            return Mono.error(new NoSuchElementException("Wrong profile id!"));
+        });
 
 
     }

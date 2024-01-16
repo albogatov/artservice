@@ -1,0 +1,15 @@
+{
+  "id": 1,
+  "userId": 1,
+  "userName": "client1",
+  "created": "2023-12-12T23:36:36.3",
+  "price": 100,
+  "description": "I love cats",
+  "tags": [
+    {
+      "id": 1,
+      "name": "myTag"
+    }
+  ],
+  "status": "OPEN"
+}

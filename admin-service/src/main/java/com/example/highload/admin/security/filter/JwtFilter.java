@@ -40,11 +40,12 @@ public class JwtFilter extends GenericFilterBean {
     }
 
     private boolean validateToken(String token) {
-        return circuitBreaker.decorateSupplier(()->(boolean) loginServiceFeignClient.validateToken(token).getBody()).get();
+        return (boolean) loginServiceFeignClient.validateToken(token).getBody();
+//        return circuitBreaker.decorateSupplier(()->(boolean) loginServiceFeignClient.validateToken(token).getBody()).get();
     }
 
     private String getLoginFromToken(String token) {
-        return circuitBreaker.decorateSupplier(() -> loginServiceFeignClient.getLoginFromToken(token).getBody()).get();
+        return loginServiceFeignClient.getLoginFromToken(token).getBody();
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

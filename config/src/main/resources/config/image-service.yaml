@@ -13,6 +13,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+  liquibase:
+    enabled: false
 eureka:
   client:
     serviceUrl:
@@ -23,4 +25,34 @@ jwt:
   expired: 84600
 pagination:
   maxSize: 50
+resilience4j.circuitbreaker:
+  instances:
+    userServiceBreaker:
+      slidingWindowSize: 5
+      permittedNumberOfCallsInHalfOpenState: 2
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 40
+    loginServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+    orderServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+    profileServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
 

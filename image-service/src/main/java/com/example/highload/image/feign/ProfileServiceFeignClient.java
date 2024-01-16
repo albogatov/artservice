@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CircuitBreaker(name = "CbServiceBasedOnCount")
+@CircuitBreaker(name = "profileServiceBreaker")
 @FeignClient("profile-service")
 public interface ProfileServiceFeignClient {
     @GetMapping("/api/profile/core/single/{id}")

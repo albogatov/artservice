@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient("image-service")
-@CircuitBreaker(name = "CbServiceBasedOnCount")
+@FeignClient(value = "image-service")
+@CircuitBreaker(name = "imageServiceBreaker")
 public interface ImageServiceFeignClient {
     @PostMapping("/api/image/removeAll/profile/{profileId}")
-    ResponseEntity<?> removeAllImagesForProfile(@PathVariable int profileId, @RequestHeader("Authorization") String token);
+    ResponseEntity<String> removeAllImagesForProfile(@PathVariable int profileId, @RequestHeader("Authorization") String token);
 
     @PostMapping("/api/image/removeAll/order/{orderId}")
-    ResponseEntity<?> removeAllImagesForOrder(@PathVariable int orderId, @RequestHeader("Authorization") String token);
+    ResponseEntity<String> removeAllImagesForOrder(@PathVariable int orderId, @RequestHeader("Authorization") String token);
 }

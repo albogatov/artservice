@@ -5,8 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient("login-service")
-@CircuitBreaker(name = "CbServiceBasedOnCount")
+@FeignClient(value = "login-service")
+@CircuitBreaker(name = "loginServiceBreaker")
 public interface LoginServiceFeignClient {
     @PostMapping("/api/auth/validate")
     ResponseEntity<?> validateToken(String token);

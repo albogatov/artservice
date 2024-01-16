@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import reactor.core.publisher.Mono;
 
-@CircuitBreaker(name = "CbServiceBasedOnCount")
+@CircuitBreaker(name = "orderServiceBreaker")
 @FeignClient("order-service")
 public interface OrderServiceFeignClient {
     @GetMapping("/api/order/client/single/{orderId}")

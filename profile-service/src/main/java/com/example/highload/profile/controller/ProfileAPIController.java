@@ -10,6 +10,8 @@ import com.example.highload.profile.model.network.ProfileDto;
 import com.example.highload.profile.model.network.UserDto;
 import com.example.highload.profile.services.ProfileService;
 import com.example.highload.profile.utils.PaginationHeadersCreator;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -101,8 +103,8 @@ public class ProfileAPIController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions() {
-        return ResponseEntity.badRequest().body("Request body validation failed!");
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return ResponseEntity.badRequest().body("Request body validation failed! " + ex.getLocalizedMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -110,4 +112,8 @@ public class ProfileAPIController {
         return ResponseEntity.badRequest().body("Wrong ids in path!");
     }
 
+    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
+    public ResponseEntity<?> handleExternalServiceExceptions() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
+    }
 }

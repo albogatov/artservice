@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: notification-service
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      client:
+        simple:
+          instances:
+            login-service[0]:
+              uri: http://localhost:80
+            user-service[0]:
+              uri: http://localhost:81
+            profile-service[0]:
+              uri: http://localhost:82
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/highload
+    username: high_user
+    password: high_user
+    pool:
+      enabled: true
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/highload
+    username: high_user
+    password: high_user
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+  liquibase:
+    change-log: classpath:db/changelog/master-changelog.yaml
+    enabled: true
+    drop-first: false
+    default-schema: public
+eureka:
+  client:
+    enabled: false
+jwt:
+  secret: "ereboging"
+  expired: 84600
+pagination:
+  maxSize: "50"
