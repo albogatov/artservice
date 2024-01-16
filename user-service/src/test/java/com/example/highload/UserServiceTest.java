@@ -1,5 +1,6 @@
 package com.example.highload;
 
+import com.example.highload.feign.LoginServiceFeignClient;
 import com.example.highload.mock.LoginServiceMock;
 import com.example.highload.mock.WireMockConfig;
 import com.example.highload.model.enums.RoleType;
@@ -9,6 +10,12 @@ import com.example.highload.model.network.UserDto;
 import com.example.highload.repos.RoleRepository;
 import com.example.highload.repos.UserRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
@@ -20,9 +27,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -32,8 +42,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@WireMockTest
 @Testcontainers
 @EnableConfigurationProperties
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -58,6 +72,12 @@ public class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LoginServiceFeignClient loginServiceFeignClient;
+
+    @Autowired
+    private CircuitBreakerRegistry circuitBreakerRegistry;
 
     private static final String adminLogin = "admin1";
     private static final String adminPassword = "admin1";
@@ -263,5 +283,6 @@ public class UserServiceTest {
                 }
         );
     }
+
 }
 

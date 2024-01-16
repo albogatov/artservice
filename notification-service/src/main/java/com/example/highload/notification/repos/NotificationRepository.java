@@ -11,8 +11,5 @@ import java.util.Optional;
 @Repository
 public interface NotificationRepository extends ReactiveCrudRepository<Notification, Integer>, CustomNotificationRepository {
 
-//    Optional<Page<Notification>> findAllByReceiverProfile_Id(Integer id, Pageable pageable);
-//    Optional<Page<Notification>> findAllBySenderProfile_Id(Integer id, Pageable pageable);
-//    Optional<Page<Notification>> findAllByIsReadFalseAndReceiverProfile_Id(Integer receiverId, Pageable pageable);
 
 }

@@ -25,6 +25,14 @@ public class LoginServiceMock {
                                         defaultCharset()))));
     }
 
+    public static void setupMockErrorValidateResponse(WireMockServer mockService) throws IOException {
+        mockService.stubFor(WireMock.post(WireMock.urlEqualTo("/api/auth/validate"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(503)
+                        .withHeader("Content-type", "application/json")
+                        .withBody(String.valueOf(Boolean.TRUE))));
+    }
+
     public static void setupMockGetLoginResponse(WireMockServer mockService) throws IOException {
         mockService.stubFor(WireMock.post(WireMock.urlEqualTo("/api/auth/get-login-from-token"))
                 .willReturn(WireMock.aResponse()
