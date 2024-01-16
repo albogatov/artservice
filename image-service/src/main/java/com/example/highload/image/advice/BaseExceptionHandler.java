@@ -1,6 +1,5 @@
 package com.example.highload.image.advice;
 
-import com.example.highload.image.exception.base.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;

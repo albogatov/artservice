@@ -1,6 +1,5 @@
 package com.example.highload.admin.advice;
 
-import com.example.highload.admin.exception.base.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;

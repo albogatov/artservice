@@ -1,6 +1,5 @@
 package com.example.highload.login.advice;
 
-import com.example.highload.login.exception.base.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;

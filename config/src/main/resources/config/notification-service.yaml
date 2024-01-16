@@ -3,7 +3,6 @@ server:
 spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/highload
-    #url: r2dbc:postgresql://postgres:5432/airline
     username: high_user
     password: high_user
     pool:
