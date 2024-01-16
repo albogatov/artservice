@@ -27,3 +27,12 @@ jwt:
   expired: 84600
 pagination:
   maxSize: 50
+resilience4j.circuitbreaker:
+  instances:
+    loginServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50

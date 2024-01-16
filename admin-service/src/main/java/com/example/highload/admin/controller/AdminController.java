@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
 
@@ -51,14 +52,19 @@ public class AdminController {
         return ResponseEntity.badRequest().body("Request body validation failed! Issues with " + exception.getLocalizedMessage());
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<?> handleServiceExceptions() {
-        return ResponseEntity.badRequest().body("Wrong ids in path!");
-    }
-
-    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
-    public ResponseEntity<?> handleExternalServiceExceptions() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
-    }
+//    @ExceptionHandler(NoSuchElementException.class)
+//    public ResponseEntity<?> handleServiceExceptions() {
+//        return ResponseEntity.badRequest().body("Wrong ids in path!");
+//    }
+//
+//    @ExceptionHandler({CallNotPermittedException.class})
+//    public ResponseEntity<?> handleExternalServiceExceptions() {
+//        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
+//    }
+//
+//    @ExceptionHandler(ResponseStatusException.class)
+//    public ResponseEntity<?> handleSuddenServiceExceptions(ResponseStatusException ex) {
+//        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+//    }
 
 }

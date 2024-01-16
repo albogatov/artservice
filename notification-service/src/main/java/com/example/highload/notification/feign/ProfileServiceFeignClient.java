@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@CircuitBreaker(name = "CbServiceBasedOnCount")
+@CircuitBreaker(name = "profileServiceBreaker")
 @FeignClient("profile-service")
 public interface ProfileServiceFeignClient {
 

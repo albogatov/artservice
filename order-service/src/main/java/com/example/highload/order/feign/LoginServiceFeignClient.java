@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@CircuitBreaker(name = "CbServiceBasedOnCount")
+@CircuitBreaker(name = "loginServiceBreaker")
 @FeignClient("login-service")
 public interface LoginServiceFeignClient {
     @PostMapping("/api/auth/validate")

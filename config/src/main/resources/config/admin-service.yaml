@@ -22,4 +22,34 @@ jwt:
   expired: ${JWT_EXPIRED}
 pagination:
   maxSize: ${PAGINATION_MAX_SIZE}
+resilience4j.circuitbreaker:
+  instances:
+    userServiceBreaker:
+      slidingWindowSize: 5
+      permittedNumberOfCallsInHalfOpenState: 2
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 40
+    loginServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+    orderServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+    imageServiceBreaker:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
 

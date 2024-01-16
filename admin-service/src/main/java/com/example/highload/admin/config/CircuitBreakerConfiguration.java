@@ -27,6 +27,8 @@ public class CircuitBreakerConfiguration {
         CircuitBreakerRegistry circuitBreakerRegistry =
                 CircuitBreakerRegistry.of(circuitBreakerConfig);
 
+        circuitBreakerRegistry.addConfiguration("baseBreaker", circuitBreakerConfig);
+
         CircuitBreaker cb = circuitBreakerRegistry.circuitBreaker("CbServiceBasedOnCount");
 
         return cb;
