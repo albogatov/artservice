@@ -52,19 +52,19 @@ public class AdminController {
         return ResponseEntity.badRequest().body("Request body validation failed! Issues with " + exception.getLocalizedMessage());
     }
 
-//    @ExceptionHandler(NoSuchElementException.class)
-//    public ResponseEntity<?> handleServiceExceptions() {
-//        return ResponseEntity.badRequest().body("Wrong ids in path!");
-//    }
-//
-//    @ExceptionHandler({CallNotPermittedException.class})
-//    public ResponseEntity<?> handleExternalServiceExceptions() {
-//        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
-//    }
-//
-//    @ExceptionHandler(ResponseStatusException.class)
-//    public ResponseEntity<?> handleSuddenServiceExceptions(ResponseStatusException ex) {
-//        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
-//    }
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.badRequest().body("Wrong ids in path!");
+    }
+
+    @ExceptionHandler({CallNotPermittedException.class})
+    public ResponseEntity<String> handleCallNotPermittedException(CallNotPermittedException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+    }
 
 }
