@@ -5,7 +5,7 @@ spring:
     hikari:
       maximum-pool-size: 50
       connection-timeout: 6000
-    url: jdbc:postgresql://postgresql:5432/highload
+    url: jdbc:postgresql://postgres:5432/highload
     username: high_user
     password: high_user
     driver-class-name: org.postgresql.Driver

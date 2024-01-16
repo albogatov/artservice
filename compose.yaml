@@ -1,5 +1,12 @@
-version: '3'
+version: '3.6'
 services:
+  dind:
+    image: docker:dind
+    container_name: dind
+    privileged: true
+    expose:
+      - 2375
+      - 2376
   postgres:
     image: 'postgres:latest'
     container_name: postgres
@@ -64,16 +71,14 @@ services:
       - 'PAGINATION_MAX_SIZE=50'
       - 'JWT_SECRET=ereboging'
       - 'JWT_EXPIRED=84600'
-      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
     build:
       context: ./login-service
       dockerfile: Dockerfile
     ports:
       - "8180:8180"
-    volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - gateway
+      - dind
 
   user-service:
     image: user-service:latest
@@ -154,18 +159,18 @@ services:
       - login-service
       - user-service
 
-#  profile-service:
-#    image: profile-service:latest
-#    container_name: profile-service
-#    environment:
-#      - 'PAGINATION_MAX_SIZE=50'
-#      - 'JWT_SECRET=ereboging'
-#      - 'JWT_EXPIRED=84600'
-#    build:
-#      context: ./profile-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8186:8186"
-#    depends_on:
-#      - login-service
-#      - user-service
+  profile-service:
+    image: profile-service:latest
+    container_name: profile-service
+    environment:
+      - 'PAGINATION_MAX_SIZE=50'
+      - 'JWT_SECRET=ereboging'
+      - 'JWT_EXPIRED=84600'
+    build:
+      context: ./profile-service
+      dockerfile: Dockerfile
+    ports:
+      - "8186:8186"
+    depends_on:
+      - login-service
+      - user-service
