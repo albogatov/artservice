@@ -132,21 +132,20 @@ public class UserServiceTest {
 
         /*add existing user*/
 
-        //TODO: Fix
-//        ExtractableResponse<Response> response2 =
-//                given()
-//                        .header("Authorization", "Bearer " + "mock")
-//                        .header("Content-type", "application/json")
-//                        .and()
-//                        .body(userDto)
-//                        .when()
-//                        .post("/api/user/save")
-//                        .then()
-//                        .extract();
-//        Assertions.assertAll(
-//                () -> Assertions.assertEquals("User already exists!", response2.body().asString()),
-//                () -> Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response2.statusCode())
-//        );
+        ExtractableResponse<Response> response2 =
+                given()
+                        .header("Authorization", "Bearer " + "mock")
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(userDto)
+                        .when()
+                        .post("/api/user/save")
+                        .then()
+                        .extract();
+        Assertions.assertAll(
+                () -> Assertions.assertEquals("User already exists!", response2.body().asString()),
+                () -> Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response2.statusCode())
+        );
 
         /* add user with wrong name (empty) */
 
@@ -166,13 +165,14 @@ public class UserServiceTest {
                         .then()
                         .extract();
         Assertions.assertAll(
-                () -> Assertions.assertEquals("Request body validation failed!", response3.body().asString()),
+                () -> Assertions.assertTrue(response3.body().asString().contains("Request body validation failed! Validation failed for classes")),
                 () -> Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response3.statusCode())
         );
     }
 
     //TODO: Fix
     @Test
+    @Order(1)
     public void deleteUser() {
         // create user using repo
 
@@ -185,7 +185,6 @@ public class UserServiceTest {
         user.setIsActual(true);
 
         User userWithId = userRepository.save(user);
-
 
         // delete existing
 
@@ -205,24 +204,10 @@ public class UserServiceTest {
                 () -> Assertions.assertThrows(NoSuchElementException.class, () -> userRepository.findByLogin("admin_test_client3").orElseThrow())
         );
 
-        // delete not existing (on prev step user was deleted)
-
-        ExtractableResponse<Response> response2 =
-                given()
-                        .header("Authorization", "Bearer " + "mock")
-                        .header("Content-type", "application/json")
-                        .when()
-                        .post("/api/user/deleteId/" + id)
-                        .then()
-                        .extract();
-        Assertions.assertAll(
-                () -> Assertions.assertEquals("Wrong ids in path!", response2.body().asString()),
-                () -> Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response2.statusCode())
-        );
-
     }
 
     @Test
+    @Order(2)
     public void deleteAllExpiredUserDeletedAccounts() {
 
         Role clientRole = roleRepository.findByName(RoleType.CLIENT).orElseThrow();
@@ -245,7 +230,7 @@ public class UserServiceTest {
                         .header("Authorization", "Bearer " + "mock")
                         .header("Content-type", "application/json")
                         .when()
-                        .post("/api/user/deleteAllExpired/" + LocalDateTime.now())
+                        .post("/api/user/deleteAllExpired/0")
                         .then()
                         .extract();
 

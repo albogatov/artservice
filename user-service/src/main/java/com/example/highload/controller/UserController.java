@@ -4,6 +4,7 @@ import com.example.highload.mapper.UserMapper;
 import com.example.highload.model.inner.User;
 import com.example.highload.model.network.UserDto;
 import com.example.highload.services.UserService;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,10 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) {
+    ResponseEntity<?> saveUser(@RequestBody UserDto userDto) {
+        if (userService.findByLoginElseNull(userDto.getLogin()) != null) {
+            return ResponseEntity.badRequest().body("User already exists!");
+        }
         User user = userService.save(userMapper.userDtoToUser(userDto));
         return ResponseEntity.ok(userMapper.userToDto(user));
     }
@@ -65,8 +69,13 @@ public class UserController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions() {
-        return ResponseEntity.badRequest().body("Request body validation failed!");
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return ResponseEntity.badRequest().body("Request body validation failed! " + exception.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintValidationExceptions(ConstraintViolationException exception) {
+        return ResponseEntity.badRequest().body("Request body validation failed! " + exception.getLocalizedMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
