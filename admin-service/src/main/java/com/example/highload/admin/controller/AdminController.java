@@ -3,8 +3,11 @@ package com.example.highload.admin.controller;
 import com.example.highload.admin.model.network.UserDto;
 import com.example.highload.admin.services.AdminService;
 import com.example.highload.admin.services.AdminUserService;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,6 +54,11 @@ public class AdminController {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleServiceExceptions() {
         return ResponseEntity.badRequest().body("Wrong ids in path!");
+    }
+
+    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
+    public ResponseEntity<?> handleExternalServiceExceptions() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
     }
 
 }

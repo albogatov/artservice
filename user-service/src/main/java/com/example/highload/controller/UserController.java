@@ -4,6 +4,8 @@ import com.example.highload.mapper.UserMapper;
 import com.example.highload.model.inner.User;
 import com.example.highload.model.network.UserDto;
 import com.example.highload.services.UserService;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -83,4 +85,8 @@ public class UserController {
         return ResponseEntity.badRequest().body("Wrong ids in path!");
     }
 
+    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
+    public ResponseEntity<?> handleExternalServiceExceptions() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
+    }
 }

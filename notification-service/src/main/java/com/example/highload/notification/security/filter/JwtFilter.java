@@ -43,11 +43,11 @@ public class JwtFilter extends GenericFilterBean {
 
 
     private boolean validateToken(String token) {
-        return countCircuitBreaker.decorateSupplier(()->(boolean) loginServiceFeignClient.validateToken(token).getBody()).get();
+        return (boolean) loginServiceFeignClient.validateToken(token).getBody();
     }
 
     private String getLoginFromToken(String token) {
-        return countCircuitBreaker.decorateSupplier(() -> loginServiceFeignClient.getLoginFromToken(token).getBody()).get();
+        return loginServiceFeignClient.getLoginFromToken(token).getBody();
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
