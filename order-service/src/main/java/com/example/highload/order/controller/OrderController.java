@@ -100,8 +100,8 @@ public class OrderController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions() {
-        return ResponseEntity.badRequest().body("Request body validation failed!");
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return ResponseEntity.badRequest().body("Request body validation failed! " + exception.getLocalizedMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)

@@ -60,8 +60,8 @@ public class ReviewController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(){
-        return ResponseEntity.badRequest().body("Request body validation failed!");
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex){
+        return ResponseEntity.badRequest().body("Request body validation failed! " + ex.getLocalizedMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)

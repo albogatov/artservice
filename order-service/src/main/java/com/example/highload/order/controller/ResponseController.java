@@ -60,9 +60,9 @@ public class ResponseController {
         return ResponseEntity.ok(responseService.findById(id));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(){
-        return ResponseEntity.badRequest().body("Request body validation failed!");
+    @ExceptionHandler(MethodArgumentNotValidException.class )
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex){
+        return ResponseEntity.badRequest().body("Request body validation failed! " + ex.getLocalizedMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
