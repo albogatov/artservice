@@ -10,6 +10,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,7 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToDto(userService.findById(id)));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/save")
     ResponseEntity<?> saveUser(@RequestBody UserDto userDto) {
         if (userService.findByLoginElseNull(userDto.getLogin()) != null) {
@@ -45,11 +47,13 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToDto(user));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/deleteId/{id}")
     ResponseEntity<?> deleteUser(@PathVariable int id) {
         userService.deleteById(id);
         return ResponseEntity.ok("User deleted successfully");
     }
+
 
     @PostMapping("/deactivate/{id}")
     public ResponseEntity<?> deactivate(@PathVariable int id) {
@@ -57,12 +61,14 @@ public class UserController {
         return new ResponseEntity<>("Profile deactivated", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/findExpired/{daysToExpire}/{page}")
     public ResponseEntity<?> findExpired(@PathVariable int daysToExpire, @PathVariable int page) {
         LocalDateTime expiryTime = LocalDateTime.now().minusDays(daysToExpire);
         return ResponseEntity.ok(userMapper.userListToDtoList(userService.findAllExpired(expiryTime, page).getContent()));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/deleteAllExpired/{daysToExpire}")
     public ResponseEntity<?> deleteAllExpired(@PathVariable int daysToExpire) {
         LocalDateTime expiryTime = LocalDateTime.now().minusDays(daysToExpire);
