@@ -1,12 +1,6 @@
 version: '3.6'
 services:
-  dind:
-    image: docker:dind
-    container_name: dind
-    privileged: true
-    expose:
-      - 2375
-      - 2376
+
   postgres:
     image: 'postgres:latest'
     container_name: postgres
@@ -33,6 +27,7 @@ services:
       - "8888:8888"
     depends_on:
       - postgres
+    restart: on-failure
 
   eureka:
     image: eureka:latest
@@ -48,6 +43,7 @@ services:
       - "8761:8761"
     depends_on:
       - config
+    restart: on-failure
 
   gateway:
     image: gateway:latest
@@ -63,6 +59,7 @@ services:
       - "8080:8080"
     depends_on:
       - eureka
+    restart: on-failure
 
   login-service:
     image: login-service:latest
@@ -78,7 +75,7 @@ services:
       - "8180:8180"
     depends_on:
       - gateway
-      - dind
+    restart: on-failure
 
   user-service:
     image: user-service:latest
@@ -94,6 +91,7 @@ services:
       - "8181:8181"
     depends_on:
       - login-service
+    restart: on-failure
 
   admin-service:
     image: admin-service:latest
@@ -110,6 +108,7 @@ services:
     depends_on:
       - login-service
       - user-service
+    restart: on-failure
 
   order-service:
     image: order-service:latest
@@ -126,6 +125,7 @@ services:
     depends_on:
       - login-service
       - user-service
+    restart: on-failure
 
   image-service:
     image: image-service:latest
@@ -142,6 +142,7 @@ services:
     depends_on:
       - login-service
       - user-service
+    restart: on-failure
 
   notification-service:
     image: notification-service:latest
@@ -158,6 +159,7 @@ services:
     depends_on:
       - login-service
       - user-service
+    restart: on-failure
 
   profile-service:
     image: profile-service:latest
@@ -174,3 +176,4 @@ services:
     depends_on:
       - login-service
       - user-service
+    restart: on-failure

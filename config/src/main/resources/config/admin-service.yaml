@@ -18,10 +18,10 @@ eureka:
     serviceUrl:
       defaultZone: http://eureka:8761/eureka/
 jwt:
-  secret: ereboging
-  expired: 84600
+  secret: ${JWT_SECRET}
+  expired: ${JWT_EXPIRED}
 pagination:
-  maxSize: 50
+  maxSize: ${PAGINATION_MAX_SIZE}
 resilience4j.circuitbreaker:
   instances:
     userServiceBreaker:
