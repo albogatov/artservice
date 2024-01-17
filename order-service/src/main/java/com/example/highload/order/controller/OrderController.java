@@ -43,12 +43,11 @@ public class OrderController {
     @PreAuthorize("hasAuthority('CLIENT')")
     public ResponseEntity<Mono<OrderDto>> update(@Valid @RequestBody OrderDto data, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.updateOrder(data, orderId);
-//        order.subscribe();
         return ResponseEntity.ok(order);
     }
 
     @GetMapping("/all/user/{userId}")
-    @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST', 'ADMIN')")
     public ResponseEntity<Flux<OrderDto>> getAllUserOrders(@PathVariable int userId) {
         Flux<OrderDto> entityList = orderService.getUserOrders(userId);
         return ResponseEntity.ok().body(entityList);
@@ -72,7 +71,6 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<Mono<OrderDto>> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.addTagsToOrder(tagIds, orderId);
-//        order.subscribe();
         return ResponseEntity.ok(order);
     }
 
@@ -80,7 +78,6 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<Mono<OrderDto>> deleteTagsFromOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.deleteTagsFromOrder(tagIds, orderId);
-//        order.subscribe();
         return ResponseEntity.ok(order);
     }
 

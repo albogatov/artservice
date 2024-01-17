@@ -101,8 +101,10 @@ public class OrderServiceImpl implements OrderService {
             return tag.getId();
         }).toList();
         return order.map(res -> {
-            res.setTags(new ArrayList<>(Stream.concat(tagReceived.map(id -> {
-                    return tagService.findById(id).map(tagMapper::tagDtoToTag).block();
+            res.setTags(new ArrayList<>(Stream.concat(tagReceived.flatMap(id -> {
+                    return tagService.findById(id).map(tagDto -> {
+                        return tagMapper.tagDtoToTag(tagDto);
+                    });
             }).filter(tag -> !existingTagIds.contains(tag.getId())).collectList().block().stream(), res.getTags().stream()).toList()));
             return orderRepository.save(res);
         })
