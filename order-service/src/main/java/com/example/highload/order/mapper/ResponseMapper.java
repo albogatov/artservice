@@ -16,6 +16,8 @@ public interface ResponseMapper {
     @Mapping(source = "user.login", target = "userName")
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "isApproved", target = "approved")
+    @Mapping(source = "order.user.id", target = "orderUserId")
+    @Mapping(source = "order.user.name", target = "orderUserName")
     ResponseDto responseToDto(Response response);
 
     @Mapping(target = "user.id", source = "userId")

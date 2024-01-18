@@ -1,13 +1,9 @@
 package com.example.highload.notification.services;
 
 import com.example.highload.notification.model.inner.Notification;
-import com.example.highload.notification.model.network.NotificationDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.example.highload.notification.model.network.ResponseDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 public interface NotificationService {
 
@@ -21,5 +17,5 @@ public interface NotificationService {
 
     Flux<Notification> getNewUserNotifications(int userId);
 
-    public Mono<Notification> sendNotification(int senderId, int receiverId, String token);
+    public Mono<Notification> sendNotification(ResponseDto responseDto);
 }

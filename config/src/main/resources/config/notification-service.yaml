@@ -1,6 +1,9 @@
 server:
   port: 8184
 spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/highload
     username: high_user
