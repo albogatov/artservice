@@ -72,7 +72,7 @@ public class ProfileAPIController {
         return ResponseEntity.ok().headers(responseHeaders).body(dtoList);
     }
 
-    @GetMapping("/user/single/{userId}")
+    @PostMapping("/user/single/{userId}")
     public ResponseEntity<?> findByUserId(@PathVariable int userId) {
         Profile profile = profileService.findByUserIdElseNull(userId);
         return ResponseEntity.ok().body(profileMapper.profileToDto(profile));

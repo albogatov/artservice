@@ -1,8 +1,9 @@
 package com.example.highload.notification.kafka;
 
 import com.example.highload.notification.model.network.ResponseDto;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value("${spring.kafka.producer.bootstrap-servers}")
+    @Value("${spring.kafka.consumer.bootstrap-servers}")
     private String bootstrap;
 
     @Bean
@@ -27,6 +28,8 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "response");
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.example.highload.notification.model.network.ResponseDto");
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.highload.order.model.network.ResponseDto");
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 

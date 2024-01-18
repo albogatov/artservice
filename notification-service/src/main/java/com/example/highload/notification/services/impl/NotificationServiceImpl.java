@@ -3,14 +3,12 @@ package com.example.highload.notification.services.impl;
 import com.example.highload.notification.feign.ProfileServiceFeignClient;
 import com.example.highload.notification.mapper.NotificationMapper;
 import com.example.highload.notification.model.inner.Notification;
-import com.example.highload.notification.model.network.NotificationDto;
 import com.example.highload.notification.model.network.ProfileDto;
 import com.example.highload.notification.model.network.ResponseDto;
 import com.example.highload.notification.repos.NotificationRepository;
 import com.example.highload.notification.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -54,10 +51,11 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.fetchAllNotReadByReceiverProfileId(userId);
     }
 
+    //TODO Sender mail = null
     @KafkaListener(topics = "notifications", groupId = "response")
     @Override
-    public Mono<Notification> sendNotification(ResponseDto responseDto) {
-        return Mono.just(responseDto).flatMap(id -> {
+    public void sendNotification(ResponseDto responseDto) {
+        Mono.just(responseDto).flatMap(id -> {
             ProfileDto senderProfile = profileServiceFeignClient.getProfileDataByUserId(responseDto.getUserId()).getBody();
             ProfileDto receiverProfile = profileServiceFeignClient.getProfileDataByUserId(responseDto.getOrderUserId()).getBody();
             Notification notification = new Notification();
@@ -65,9 +63,12 @@ public class NotificationServiceImpl implements NotificationService {
             notification.setReceiverProfileId(receiverProfile.getId());
             notification.setIsRead(false);
             notification.setTime(LocalDateTime.now());
-            messagingTemplate.convertAndSendToUser(responseDto.getUserName(), "/notifications", notificationMapper.notificationToNotificationDto(notification));
-            return notificationRepository.save(notification);
-        });
+            Mono<Notification> notificationMono = notificationRepository.save(notification);
+            return notificationMono;
+        }).map(notification -> {
+            messagingTemplate.convertAndSendToUser(responseDto.getOrderUserName(), "/notifications", notificationMapper.notificationToNotificationDto(notification));
+            return notification;
+        }).subscribe();
     }
 
 //    @Override

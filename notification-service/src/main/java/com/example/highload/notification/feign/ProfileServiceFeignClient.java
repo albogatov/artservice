@@ -14,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 @FeignClient("profile-service")
 public interface ProfileServiceFeignClient {
 
-    @GetMapping("/api/profile/core/user/single/${id}")
+    @PostMapping("/api/profile/core/user/single/{id}")
     @Async
-    ResponseEntity<ProfileDto> getProfileDataByUserId(@PathVariable int ids);
+    ResponseEntity<ProfileDto> getProfileDataByUserId(@PathVariable int id);
 
 }

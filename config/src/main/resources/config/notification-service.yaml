@@ -2,8 +2,19 @@ server:
   port: 8184
 spring:
   kafka:
-    producer:
-      bootstrap-servers: localhost:9092
+    consumer:
+      bootstrap-servers: kafka:29092
+      group-id=response:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages=*:
+    template:
+      default-topic=notifications:
+
   r2dbc:
     url: r2dbc:postgresql://postgres:5432/highload
     username: high_user

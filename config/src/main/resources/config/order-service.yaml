@@ -2,8 +2,14 @@ server:
   port: 8183
 spring:
   kafka:
+    consumer:
+      group-id=response:
+    template:
+      default-topic=notifications:
     producer:
-      bootstrap-servers: localhost:9092
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: kafka:29092
   datasource:
     hikari:
       maximum-pool-size: 50

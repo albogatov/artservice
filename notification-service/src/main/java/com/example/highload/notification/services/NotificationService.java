@@ -17,5 +17,5 @@ public interface NotificationService {
 
     Flux<Notification> getNewUserNotifications(int userId);
 
-    public Mono<Notification> sendNotification(ResponseDto responseDto);
+    public void sendNotification(ResponseDto responseDto);
 }
