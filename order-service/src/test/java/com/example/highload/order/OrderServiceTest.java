@@ -15,12 +15,15 @@ import com.example.highload.order.repos.OrderRepository;
 import com.example.highload.order.repos.ResponseRepository;
 import com.example.highload.order.repos.TagRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -42,6 +45,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
@@ -54,6 +58,9 @@ public class OrderServiceTest {
 
     @LocalServerPort
     private Integer port;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Autowired
     private WireMockServer mockLoginService;
@@ -133,10 +140,12 @@ public class OrderServiceTest {
         TagDto tagDto = new TagDto();
         tagDto.setName(tagName);
 
+        String token = tokenProvider("admin1", "ADMIN");
+
         ExtractableResponse<Response> response =
                 given()
                         .header("Content-type", "application/json")
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .and()
                         .body(tagDto)
                         .when()
@@ -160,10 +169,12 @@ public class OrderServiceTest {
         TagDto tagDto = new TagDto();
         tagDto.setName(tagName);
 
+        String token = tokenProvider("admin1", "ADMIN");
+
         ExtractableResponse<Response> response =
                 given()
                         .header("Content-type", "application/json")
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .and()
                         .body(tagDto)
                         .when()
@@ -183,10 +194,12 @@ public class OrderServiceTest {
         TagDto tagDto = new TagDto();
         tagDto.setName(tagName);
 
+        String token = tokenProvider("client1", "CLIENT");
+
         ExtractableResponse<Response> response =
                 given()
                         .header("Content-type", "application/json")
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .and()
                         .body(tagDto)
                         .when()
@@ -206,6 +219,8 @@ public class OrderServiceTest {
     @Order(4)
     public void addOrder() {
 
+        String token = tokenProvider("client1", "CLIENT");
+
         Tag tag = tagRepository.findByName("Programmer").orElseThrow();
         OrderDto orderDto = new OrderDto();
         orderDto.setDescription("1o");
@@ -221,7 +236,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(orderDto)
@@ -245,7 +260,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response2 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(orderDto)
@@ -265,6 +280,8 @@ public class OrderServiceTest {
     @Order(5)
     public void updateOrder() {
 
+        String token = tokenProvider("client1", "CLIENT");
+
         Tag tag = tagRepository.findByName("Programmer").orElseThrow();
         OrderDto orderDto = new OrderDto();
         orderDto.setDescription("1o");
@@ -281,7 +298,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(orderDto)
@@ -302,7 +319,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response2 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(orderDto)
@@ -322,12 +339,13 @@ public class OrderServiceTest {
     @Order(6)
     public void getAllUserOpenOrders() {
 
+        String token = tokenProvider("client1", "CLIENT");
 
         // get all
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .when()
                         .get("/api/order/client/open/user/" + 1)
@@ -358,10 +376,12 @@ public class OrderServiceTest {
         TagDto tagDto = new TagDto();
         tagDto.setName(tagName);
 
+        String token = tokenProvider("admin1", "ADMIN");
+
         ExtractableResponse<Response> response =
                 given()
                         .header("Content-type", "application/json")
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .and()
                         .body(tagDto)
                         .when()
@@ -376,12 +396,13 @@ public class OrderServiceTest {
                 }
         );
 
+        token = tokenProvider("client1", "CLIENT");
 
         // add existing
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(List.of(tagRepository.findByName(tagName).orElseThrow().getId()))
@@ -401,7 +422,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response2 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(List.of(999))
@@ -419,14 +440,14 @@ public class OrderServiceTest {
     @Order(8)
     public void getAllOrdersByTags() {
 
+        String token = tokenProvider("client1", "CLIENT");
+
         Tag tag1 = tagRepository.findByName("Programmer").orElseThrow();
         Tag tag3 = tagRepository.findByName("NewTag").orElseThrow();
 
-
-
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(List.of(tag1.getId(), tag3.getId()))
@@ -451,13 +472,15 @@ public class OrderServiceTest {
     @Order(9)
     public void getAllOpenOrdersByTags() {
 
+        String token = tokenProvider("client1", "CLIENT");
+
         Tag tag1 = tagRepository.findByName("Programmer").orElseThrow();
         Tag tag2 = tagRepository.findByName("NewTag").orElseThrow();
 
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(List.of(tag1.getId(), tag2.getId()))
@@ -483,7 +506,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response2 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(List.of(tag1.getId(), tag2.getId()))
@@ -507,6 +530,7 @@ public class OrderServiceTest {
     @Order(10)
     public void addResponse() {
 
+        String token = tokenProvider("artist1", "ARTIST");
         // save valid
 
         ResponseDto responseDto = new ResponseDto();
@@ -518,7 +542,7 @@ public class OrderServiceTest {
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(responseDto)
@@ -542,12 +566,12 @@ public class OrderServiceTest {
     @Order(11)
     public void getAllByOrder() {
 
-
+        String token = tokenProvider("client1", "CLIENT");
         // get all
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .when()
                         .get("/api/order/response/all/order/" + 1 )
@@ -574,10 +598,11 @@ public class OrderServiceTest {
     @Order(12)
     public void approveResponse() {
 
+        String token = tokenProvider("client1", "CLIENT");
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .when()
                         .post("/api/order/response/approve/" + 1)
@@ -596,6 +621,17 @@ public class OrderServiceTest {
         );
 
 
+    }
+
+    public String tokenProvider(String login, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", role);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(login)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
     }
 }
 

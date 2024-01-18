@@ -24,7 +24,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/master-changelog.yaml
     enabled: true
-    drop-first: false
+    drop-first: true
     default-schema: public
 eureka:
   client:

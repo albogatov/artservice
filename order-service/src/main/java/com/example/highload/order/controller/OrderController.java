@@ -68,7 +68,6 @@ public class OrderController {
 
 
     @PostMapping("/single/{orderId}/tags/add")
-    @PreAuthorize("hasAnyAuthority('CLIENT')")
     public ResponseEntity<Mono<OrderDto>> addTagsToOrder(@Valid @RequestBody List<Integer> tagIds, @PathVariable int orderId) {
         Mono<OrderDto> order = orderService.addTagsToOrder(tagIds, orderId);
         return ResponseEntity.ok(order);

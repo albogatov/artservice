@@ -7,12 +7,15 @@ import com.example.highload.image.model.inner.ImageObject;
 import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.repos.ImageRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -26,9 +29,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
@@ -41,6 +45,9 @@ public class ImageServiceTest {
 
     @LocalServerPort
     private Integer port;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Autowired
     private WireMockServer mockLoginService;
@@ -129,12 +136,13 @@ public class ImageServiceTest {
         imageDtoList.add(imageDto1);
         imageDtoList.add(imageDto2);
 
+        String token = tokenProvider("artist1", "ARTIST");
 
         // add to artist profile
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(imageDtoList)
@@ -167,12 +175,13 @@ public class ImageServiceTest {
         ImageDto imageDto = new ImageDto();
         imageDto.setUrl("main");
 
+        String token = tokenProvider("artist1", "ARTIST");
 
         // add to artist profile
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(imageDto)
@@ -192,11 +201,13 @@ public class ImageServiceTest {
     @Order(3)
     public void removeImageForProfile() {
 
+        String token = tokenProvider("artist1", "ARTIST");
+
         // remove from artist profile
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .when()
                         .post("/api/image/remove/profile/" + 1)
@@ -209,6 +220,17 @@ public class ImageServiceTest {
                 () -> Assertions.assertEquals(HttpStatus.OK.value(), response1.statusCode())
         );
 
+    }
+
+    public String tokenProvider(String login, String role) {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("roles", role);
+
+            return Jwts.builder()
+                    .setClaims(claims)
+                    .setSubject(login)
+                    .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                    .compact();
     }
 }
 

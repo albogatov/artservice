@@ -16,12 +16,15 @@ import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -39,7 +42,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -57,6 +62,9 @@ public class UserServiceTest {
 
     @LocalServerPort
     private Integer port;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Autowired
     private WireMockServer mockLoginService;
@@ -135,9 +143,11 @@ public class UserServiceTest {
         userDto.setPassword("admin_test_client1");
         userDto.setRole(RoleType.CLIENT);
 
+        String token = tokenProvider("admin1", "ADMIN");
+
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(userDto)
@@ -154,7 +164,7 @@ public class UserServiceTest {
 
         ExtractableResponse<Response> response2 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(userDto)
@@ -176,7 +186,7 @@ public class UserServiceTest {
 
         ExtractableResponse<Response> response3 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .and()
                         .body(wrongUserDto)
@@ -195,6 +205,7 @@ public class UserServiceTest {
     @Order(1)
     public void deleteUser() {
         // create user using repo
+        String token = tokenProvider("admin1", "ADMIN");
 
         Role clientRole = roleRepository.findByName(RoleType.CLIENT).orElseThrow();
 
@@ -212,7 +223,7 @@ public class UserServiceTest {
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .when()
                         .post("/api/user/deleteId/" + id)
@@ -229,6 +240,9 @@ public class UserServiceTest {
     @Test
     @Order(2)
     public void deleteAllExpiredUserDeletedAccounts() {
+
+
+        String token = tokenProvider("admin1", "ADMIN");
 
         Role clientRole = roleRepository.findByName(RoleType.CLIENT).orElseThrow();
 
@@ -247,7 +261,7 @@ public class UserServiceTest {
 
         ExtractableResponse<Response> response1 =
                 given()
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .header("Content-type", "application/json")
                         .when()
                         .post("/api/user/deleteAllExpired/0")
@@ -267,10 +281,12 @@ public class UserServiceTest {
         User user = userRepository.findByLogin(clientLogin).orElseThrow();
         Integer userId = user.getId();
 
+        String token = tokenProvider("client1", "CLIENT");
+
         ExtractableResponse<Response> response =
                 given()
                         .header("Content-type", "application/json")
-                        .header("Authorization", "Bearer " + "mock")
+                        .header("Authorization", "Bearer " + token)
                         .when()
                         .post("/api/user/deactivate/" + userId)
                         .then()
@@ -282,6 +298,17 @@ public class UserServiceTest {
                     Assertions.assertFalse(user2.getIsActual());
                 }
         );
+    }
+
+    public String tokenProvider(String login, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", role);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(login)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
     }
 
 }
