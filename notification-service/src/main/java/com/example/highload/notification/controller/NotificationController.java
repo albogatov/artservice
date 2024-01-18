@@ -4,24 +4,18 @@ import com.example.highload.notification.mapper.NotificationMapper;
 import com.example.highload.notification.model.inner.Notification;
 import com.example.highload.notification.model.network.NotificationDto;
 import com.example.highload.notification.services.NotificationService;
-import com.example.highload.notification.utils.PaginationHeadersCreator;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -31,12 +25,12 @@ public class NotificationController {
 
     private final NotificationService notificationService;
     private final NotificationMapper notificationMapper;
-    private final PaginationHeadersCreator paginationHeadersCreator;
+    private final String topicName = "notifications";
 
-    @PostMapping("/send/from-{senderId}/to-{receiverId}")
-    public ResponseEntity<Mono<NotificationDto>> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
-        return ResponseEntity.ok(notificationService.sendNotification(senderId, receiverId, token).map(notificationMapper::notificationToNotificationDto));
-    }
+//    @MessageMapping("/send/from-{senderId}/to-{receiverId}")
+//    public ResponseEntity<Mono<NotificationDto>> send(@PathVariable int senderId, @PathVariable int receiverId, @RequestHeader(value = "Authorization", required = true) String token){
+//        return ResponseEntity.ok(notificationService.sendNotification(senderId, receiverId, token, topicName).map(notificationMapper::notificationToNotificationDto));
+//    }
 
     @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")

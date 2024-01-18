@@ -1,4 +1,4 @@
-package com.example.highload.order.model.network;
+package com.example.highload.notification.model.network;
 
 import lombok.Data;
 

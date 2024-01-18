@@ -1,6 +1,9 @@
 server:
   port: 8183
 spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
   datasource:
     hikari:
       maximum-pool-size: 50

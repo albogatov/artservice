@@ -9,6 +9,7 @@ import com.example.highload.order.services.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,6 +20,7 @@ public class ResponseServiceImpl implements ResponseService {
 
     private final ResponseRepository responseRepository;
     private final ResponseMapper responseMapper;
+    private final KafkaTemplate<String, ResponseDto> kafkaTemplate;
 
     @Override
     public Mono<ResponseDto> saveResponse(ResponseDto responseDto) {
@@ -30,6 +32,7 @@ public class ResponseServiceImpl implements ResponseService {
         Mono<Response> response = Mono.just(responseRepository.findById(id).orElseThrow());
         return response.map(res -> {
             res.setIsApproved(true);
+            kafkaTemplate.send("notifications", responseMapper.responseToDto(res));
             return responseRepository.save(res);
         }).map(responseMapper::responseToDto);
     }
