@@ -20,7 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -36,8 +38,14 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('CLIENT')")
     @PostMapping("/add/order/{orderId}")
-    public ResponseEntity<?> addImagesToOrder(@Valid @RequestBody List<ImageDto> imageDtos, @PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
-        imageService.saveImagesForOrder(imageDtos, orderId, token);
+    public ResponseEntity<?> addImagesToOrder(@RequestParam("files") List<MultipartFile> file, @PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
+        List<ImageDto> images = new ArrayList<>();
+        for (int i = 0; i < file.size(); i++) {
+            ImageDto imageDto = new ImageDto();
+            imageDto.setImage(file.get(i));
+            images.add(imageDto);
+        }
+        imageService.saveImagesForOrder(images, orderId, token);
         return ResponseEntity.ok("Images added");
     }
 
@@ -52,15 +60,23 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('ARTIST')")
     @PostMapping("/add/profile")
-    public ResponseEntity<?> addImagesToProfile(@Valid @RequestBody List<ImageDto> imageDtos, @RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<?> addImagesToProfile(@RequestParam("files") List<MultipartFile> file, @RequestHeader(value = "Authorization") String token) {
+        List<ImageDto> images = new ArrayList<>();
+        for (int i = 0; i < file.size(); i++) {
+            ImageDto imageDto = new ImageDto();
+            imageDto.setImage(file.get(i));
+            images.add(imageDto);
+        }
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         int profileId = userService.findByLoginElseNull(login, token).getBody().getProfileId();
-        imageService.saveImageForProfile(imageDtos, profileId, token);
+        imageService.saveImageForProfile(images, profileId, token);
         return ResponseEntity.ok("Images added");
     }
 
     @PostMapping("/change/profile")
-    public ResponseEntity<?> changeMainImageOfProfile(@Valid @RequestBody ImageDto imageDto,@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<?> changeMainImageOfProfile(@RequestParam("file") MultipartFile file, @RequestHeader(value = "Authorization") String token) {
+        ImageDto imageDto = new ImageDto();
+        imageDto.setImage(file);
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         int profileId = userService.findByLoginElseNull(login, token).getBody().getProfileId();
         imageService.changeMainImageOfProfile(imageDto, profileId, token);

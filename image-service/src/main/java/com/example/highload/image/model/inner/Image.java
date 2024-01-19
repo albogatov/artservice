@@ -14,8 +14,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
-    @Column(name = "url", nullable = false)
+    @Column(name = "url")
     private String url;
 
     @OneToOne(mappedBy = "image")
