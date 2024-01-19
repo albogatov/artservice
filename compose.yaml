@@ -1,5 +1,18 @@
 version: '3.6'
 services:
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: root1234
+    command: server --console-address ":9001" /data
+
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -169,6 +182,7 @@ services:
     depends_on:
       - login-service
       - user-service
+      - minio
     restart: on-failure
 
   notification-service:
@@ -206,3 +220,6 @@ services:
       - login-service
       - user-service
     restart: on-failure
+
+volumes:
+  minio_storage: { }
