@@ -65,6 +65,8 @@ public class NotificationServiceImpl implements NotificationService {
             notification.setTime(LocalDateTime.now());
             Mono<Notification> notificationMono = notificationRepository.save(notification);
             return notificationMono;
+        }).flatMap(notification -> {
+            return findById(notification.getId());
         }).map(notification -> {
             messagingTemplate.convertAndSendToUser(responseDto.getOrderUserName(), "/notifications", notificationMapper.notificationToNotificationDto(notification));
             return notification;
