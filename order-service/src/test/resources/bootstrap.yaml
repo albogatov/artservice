@@ -1,4 +1,13 @@
 spring:
+  kafka:
+    consumer:
+      group-id=response:
+    template:
+      default-topic=notifications:
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: kafka:29092
   application:
     name: order-service
   cloud:
@@ -9,9 +18,9 @@ spring:
         simple:
           instances:
             login-service[0]:
-              uri: http://localhost:80
+              uri: http://localhost:8765
             user-service[0]:
-              uri: http://localhost:81
+              uri: http://localhost:8764
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/highload

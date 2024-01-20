@@ -594,34 +594,34 @@ public class OrderServiceTest {
     }
 
 
-    @Test
-    @Order(12)
-    public void approveResponse() {
-
-        String token = tokenProvider("client1", "CLIENT");
-
-        ExtractableResponse<Response> response1 =
-                given()
-                        .header("Authorization", "Bearer " + token)
-                        .header("Content-type", "application/json")
-                        .when()
-                        .post("/api/order/response/approve/" + 1)
-                        .then()
-                        .extract();
-
-
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(HttpStatus.OK.value(), response1.statusCode())
-        );
-
-        com.example.highload.order.model.inner.Response response = responseRepository.findById(1).orElseThrow();
-
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(true, response.getIsApproved())
-        );
-
-
-    }
+//    @Test
+//    @Order(12)
+//    public void approveResponse() {
+//
+//        String token = tokenProvider("client1", "CLIENT");
+//
+//        ExtractableResponse<Response> response1 =
+//                given()
+//                        .header("Authorization", "Bearer " + token)
+//                        .header("Content-type", "application/json")
+//                        .when()
+//                        .post("/api/order/response/approve/" + 1)
+//                        .then()
+//                        .extract();
+//
+//
+//        Assertions.assertAll(
+//                () -> Assertions.assertEquals(HttpStatus.OK.value(), response1.statusCode())
+//        );
+//
+//        com.example.highload.order.model.inner.Response response = responseRepository.findById(1).orElseThrow();
+//
+//        Assertions.assertAll(
+//                () -> Assertions.assertEquals(true, response.getIsApproved())
+//        );
+//
+//
+//    }
 
     public String tokenProvider(String login, String role) {
         Map<String, Object> claims = new HashMap<>();

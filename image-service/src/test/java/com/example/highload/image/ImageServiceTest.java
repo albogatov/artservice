@@ -3,16 +3,17 @@ package com.example.highload.image;
 import com.example.highload.image.mapper.ImageMapper;
 import com.example.highload.image.mock.*;
 import com.example.highload.image.model.inner.Image;
-import com.example.highload.image.model.inner.ImageObject;
-import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.repos.ImageRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.minio.MinioClient;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,19 +22,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Supplier;
 
+import static io.jsonwebtoken.lang.Classes.getResourceAsStream;
 import static io.restassured.RestAssured.given;
 
 @Testcontainers
@@ -72,18 +76,17 @@ public class ImageServiceTest {
 
     @Autowired
     private ImageMapper imageMapper;
-    private static final String adminLogin = "admin1";
-    private static final String adminPassword = "admin1";
-    private static final String adminRole = "ADMIN";
-    private static final String artistLogin = "artist1";
-    private static final String artistPassword = "artist1";
-    private static final String artistRole = "ARTIST";
-    private static final String clientLogin = "client1";
-    private static final String clientPassword = "client1";
-    private static final String clientRole = "CLIENT";
-    private static final String newClientLogin = "client2";
-    private static final String newClientPassword = "client2";
 
+
+    @Container
+    private static final MinIOContainer minIOContainer = new MinIOContainer("minio/minio:RELEASE.2023-09-04T19-57-37Z")
+            .withExposedPorts(9000);
+
+//    MinioClient minioClient = MinioClient
+//            .builder()
+//            .endpoint(minIOContainer.getS3URL())
+//            .credentials(minIOContainer.getUserName(), minIOContainer.getPassword())
+//            .build();
 
     @Container
     @ServiceConnection
@@ -98,11 +101,15 @@ public class ImageServiceTest {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add("minio.url", minIOContainer::getS3URL);
+        registry.add("minio.port", () -> minIOContainer.getMappedPort(9000));
     }
 
     @BeforeAll
     static void pgStart() {
         postgreSQLContainer.start();
+        minIOContainer.configure();
+        minIOContainer.start();
     }
 
     @BeforeEach
@@ -124,17 +131,11 @@ public class ImageServiceTest {
 
     @Test
     @Order(1)
-    public void addImagesToProfile() {
+    public void addImagesToProfile() throws IOException {
 
-        ImageDto imageDto1 = new ImageDto();
-        imageDto1.setUrl("first");
-
-        ImageDto imageDto2 = new ImageDto();
-        imageDto2.setUrl("second");
-
-        List<ImageDto> imageDtoList = new ArrayList<>();
-        imageDtoList.add(imageDto1);
-        imageDtoList.add(imageDto2);
+        RequestSpecBuilder builder = new RequestSpecBuilder();
+        builder.addParam("files", "..file");
+        RequestSpecification requestSpec = builder.build();
 
         String token = tokenProvider("artist1", "ARTIST");
 
@@ -143,9 +144,9 @@ public class ImageServiceTest {
         ExtractableResponse<Response> response1 =
                 given()
                         .header("Authorization", "Bearer " + token)
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(imageDtoList)
+                        .spec(requestSpec)
+                        .contentType(String.valueOf(MediaType.MULTIPART_FORM_DATA))
+                        .multiPart("files", new File(getClass().getClassLoader().getResource("payload/imageExample.jpg").getFile()))
                         .when()
                         .post("/api/image/add/profile")
                         .then()
@@ -160,20 +161,14 @@ public class ImageServiceTest {
         List<Image> images = imageRepository.findAll().stream().toList();
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals(2, images.size()),
-                () -> Assertions.assertEquals("second", images.get(1).getUrl()),
-                () -> Assertions.assertEquals("first", images.get(0).getUrl())
+                () -> Assertions.assertEquals(1, images.size())
         );
 
     }
 
     @Test
     @Order(2)
-    public void changeMainImageOfProfile() {
-
-
-        ImageDto imageDto = new ImageDto();
-        imageDto.setUrl("main");
+    public void changeMainImageOfProfile() throws IOException {
 
         String token = tokenProvider("artist1", "ARTIST");
 
@@ -182,9 +177,9 @@ public class ImageServiceTest {
         ExtractableResponse<Response> response1 =
                 given()
                         .header("Authorization", "Bearer " + token)
-                        .header("Content-type", "application/json")
                         .and()
-                        .body(imageDto)
+                        .contentType(String.valueOf(MediaType.MULTIPART_FORM_DATA))
+                        .multiPart("file", new File(getClass().getClassLoader().getResource("payload/imageExample.jpg").getFile()))
                         .when()
                         .post("/api/image/change/profile")
                         .then()
