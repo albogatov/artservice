@@ -9,13 +9,13 @@ spring:
         simple:
           instances:
             login-service[0]:
-              uri: http://localhost:80
+              uri: http://localhost:9765
             user-service[0]:
-              uri: http://localhost:81
+              uri: http://localhost:9764
             order-service[0]:
-              uri: http://localhost:82
+              uri: http://localhost:9763
             profile-service[0]:
-              uri: http://localhost:83
+              uri: http://localhost:9762
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/highload
@@ -38,3 +38,15 @@ jwt:
   expired: 84600
 pagination:
   maxSize: "50"
+minio:
+  bucket:
+    name: test
+  default:
+    folder: /
+  access:
+    name: minioadmin
+    secret: minioadmin
+  secure: false
+  port: 9000
+  imageSize: 41943040
+  fileSize: 1073741824

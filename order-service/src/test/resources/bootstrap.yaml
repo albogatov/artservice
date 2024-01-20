@@ -9,9 +9,9 @@ spring:
         simple:
           instances:
             login-service[0]:
-              uri: http://localhost:80
+              uri: http://localhost:8765
             user-service[0]:
-              uri: http://localhost:81
+              uri: http://localhost:8764
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/highload

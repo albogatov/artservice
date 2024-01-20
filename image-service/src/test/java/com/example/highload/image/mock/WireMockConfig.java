@@ -11,21 +11,21 @@ public class WireMockConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public WireMockServer mockLoginService() {
-        return new WireMockServer(80);
+        return new WireMockServer(9765);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public WireMockServer mockUserService() {
-        return new WireMockServer(81);
+        return new WireMockServer(9764);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public WireMockServer mockOrderService() {
-        return new WireMockServer(82);
+        return new WireMockServer(9763);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public WireMockServer mockProfileService() {
-        return new WireMockServer(83);
+        return new WireMockServer(9762);
     }
 }
