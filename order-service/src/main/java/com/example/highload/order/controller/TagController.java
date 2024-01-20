@@ -2,10 +2,18 @@ package com.example.highload.order.controller;
 
 import com.example.highload.order.mapper.TagMapper;
 import com.example.highload.order.model.inner.Tag;
+import com.example.highload.order.model.network.ResponseDto;
 import com.example.highload.order.model.network.TagDto;
 import com.example.highload.order.services.TagService;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,12 +41,37 @@ public class TagController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @Operation(description = "Add new tag",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            schema = @Schema(implementation = TagDto.class)
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<Mono<TagDto>> save(@Valid @RequestBody TagDto data) {
        // tagService.saveTag(data);
         return ResponseEntity.ok(tagService.saveTag(data));
     }
 
     @GetMapping("/all")
+    @Operation(description = "Get all tags",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = TagDto.class))
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<Flux<TagDto>> getAll() {
         return ResponseEntity.ok().body(tagService.findAll());
     }

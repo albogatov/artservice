@@ -9,6 +9,14 @@ import com.example.highload.profile.services.ReviewService;
 import com.example.highload.profile.utils.PaginationHeadersCreator;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,14 +45,39 @@ public class ReviewController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
+    @Operation(description = "Add review for profile",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Review saved")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> save(@Valid @RequestBody ReviewDto data, @RequestHeader(value = "Authorization") String token){
         if(reviewService.saveReview(data, token) != null)
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok("Review saved");
         else return ResponseEntity.badRequest().body("Couldn't save review, check data");
     }
 
     @GetMapping("/all/{profileId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @Operation(description = "Get all reviews by profile",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class))
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> getAllByProfile(@PathVariable int profileId, @PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Profile entity = profileService.findById(profileId);
@@ -56,6 +89,18 @@ public class ReviewController {
 
     @GetMapping("/single/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @Operation(description = "Get review by id",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            schema = @Schema(implementation = ReviewDto.class)
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> getById(@PathVariable int id){
         Review entity = reviewService.findById(id);
         ReviewDto reviewDto = reviewMapper.reviewToDto(entity);

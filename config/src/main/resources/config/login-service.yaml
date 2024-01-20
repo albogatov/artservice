@@ -1,5 +1,6 @@
 server:
   port: 8180
+  forward-headers-strategy: framework
 spring:
   security:
     basic:
@@ -28,3 +29,7 @@ jwt:
   expired: ${JWT_EXPIRED}
 pagination:
   maxSize: ${PAGINATION_MAX_SIZE}
+
+springdoc:
+  swagger-ui:
+    use-root-path: true

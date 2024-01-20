@@ -98,6 +98,7 @@ springdoc:
       paths-to-match: /api/notification/**
       display-name: notification-service
   swagger-ui:
+    use-root-path: true
     config-url: /v3/api-docs/swagger-config
     url: /v3/api-docs
     urls:

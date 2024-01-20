@@ -1,5 +1,6 @@
 server:
   port: 8185
+  forward-headers-strategy: framework
 spring:
   datasource:
     hikari:

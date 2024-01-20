@@ -8,6 +8,14 @@ import com.example.highload.image.services.ImageService;
 import com.example.highload.image.utils.PaginationHeadersCreator;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +46,22 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('CLIENT')")
     @PostMapping("/add/order/{orderId}")
+    @Operation(description = "Add images for order",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Images added")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Request body validation failed! Exception reading parameter <localized message>")}
+                    )
+            }),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> addImagesToOrder(@RequestParam("files") List<MultipartFile> file, @PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
         List<ImageDto> images = new ArrayList<>();
         for (int i = 0; i < file.size(); i++) {
@@ -51,6 +75,19 @@ public class ImageObjectController {
 
     @GetMapping("/order/single/{orderId}/images/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @Operation(description = "Get images for order",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ImageDto.class))
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> getOrderImages(@Valid @PathVariable int orderId, @PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Page<Image> entityList = imageService.findAllOrderImages(orderId, pageable);
@@ -60,6 +97,22 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('ARTIST')")
     @PostMapping("/add/profile")
+    @Operation(description = "Add images for profile",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Images added")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Request body validation failed! Exception reading parameter <localized message>")}
+                    )
+            }),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> addImagesToProfile(@RequestParam("files") List<MultipartFile> file, @RequestHeader(value = "Authorization") String token) {
         List<ImageDto> images = new ArrayList<>();
         for (int i = 0; i < file.size(); i++) {
@@ -74,6 +127,22 @@ public class ImageObjectController {
     }
 
     @PostMapping("/change/profile")
+    @Operation(description = "Change profile image",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Main image changed")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Request body validation failed! Exception reading parameter <localized message>")}
+                    )
+            }),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> changeMainImageOfProfile(@RequestParam("file") MultipartFile file, @RequestHeader(value = "Authorization") String token) {
         ImageDto imageDto = new ImageDto();
         imageDto.setImage(file);
@@ -85,6 +154,22 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('CLIENT')")
     @PostMapping("/remove/order/{orderId}/{imageId}")
+    @Operation(description = "Remove images for order",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Image removed")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Request body validation failed! Exception reading parameter <localized message>")}
+                    )
+            }),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> removeImageForOrder(@PathVariable int imageId, @PathVariable int orderId) {
         imageService.removeImageForOrder(imageId, orderId);
         return ResponseEntity.ok("Image removed");
@@ -92,6 +177,22 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('ARTIST')")
     @PostMapping("/remove/profile/{imageId}")
+    @Operation(description = "Remove images for profile",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Image removed")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Request body validation failed! Exception reading parameter <localized message>")}
+                    )
+            }),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> removeImageForProfile(@PathVariable int imageId, @RequestHeader(value = "Authorization") String token) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         int profileId = userService.findByLoginElseNull(login, token).getBody().getProfileId();
@@ -101,6 +202,23 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/removeAll/profile/{profileId}")
+    @Operation(description = "Remove all images for expired profile",
+            tags = "Admin Only",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Image removed")}
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect", content = {
+                    @Content(
+                            examples = {@ExampleObject(value = "Request body validation failed! Exception reading parameter <localized message>")}
+                    )
+            }),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> removeAllImagesForProfile(@PathVariable int profileId, @RequestHeader(value = "Authorization") String token) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         imageService.removeAllImagesForProfile(profileId);
@@ -109,6 +227,15 @@ public class ImageObjectController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/removeAll/order/{orderId}")
+    @Operation(description = "Remove images for expired order",
+            tags = "Admin Only",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> removeAllImagesForOrder(@PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         imageService.removeAllImagesForOrder(orderId);
@@ -117,6 +244,19 @@ public class ImageObjectController {
 
     // This was moved from profile service
     @GetMapping("/profile/single/{id}/images/{page}")
+    @Operation(description = "Get images for profile",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ImageDto.class))
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<?> getProfileImagesByIdAndPageNumber(@PathVariable int id, @PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 50);
         Page<Image> images = imageService.findAllProfileImages(id, pageable);

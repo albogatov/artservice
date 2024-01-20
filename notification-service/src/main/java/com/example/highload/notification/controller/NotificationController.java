@@ -6,6 +6,13 @@ import com.example.highload.notification.model.network.NotificationDto;
 import com.example.highload.notification.services.NotificationService;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +41,37 @@ public class NotificationController {
 
     @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @Operation(description = "Read notification",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            schema = @Schema (implementation = NotificationDto.class)
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<Mono<NotificationDto>> setRead(@PathVariable int id){
         return ResponseEntity.ok(notificationService.readNotification(id).map(notificationMapper::notificationToNotificationDto));
     }
 
     @GetMapping("/all/{userId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @Operation(description = "Get all notifications",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = NotificationDto.class))
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<Flux<NotificationDto>> getAllQueries(@PathVariable int userId) {
 
         Flux<Notification> entityList = notificationService.getAllUserNotifications(userId);
@@ -50,6 +82,19 @@ public class NotificationController {
 
     @GetMapping("/new/{userId}/{page}")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ARTIST')")
+    @Operation(description = "Get only unread notifications",
+            security = { @SecurityRequirement(name = "bearer-key")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = NotificationDto.class))
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "403", description = "No authority for this operations"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     public ResponseEntity<Flux<NotificationDto>> getNewQueries(@PathVariable int userId) {
 
         Flux<Notification> entityList = notificationService.getNewUserNotifications(userId);

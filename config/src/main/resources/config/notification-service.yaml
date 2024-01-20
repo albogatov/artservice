@@ -1,5 +1,6 @@
 server:
   port: 8184
+  forward-headers-strategy: framework
 spring:
   kafka:
     consumer:
