@@ -35,4 +35,4 @@ jobs:
             git checkout master
             git pull
             mvn clean install -DskipTests
-            docker compose up -d
+            sudo docker compose up -d
