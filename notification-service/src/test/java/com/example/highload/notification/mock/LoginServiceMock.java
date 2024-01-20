@@ -1,4 +1,4 @@
-package com.example.highload.image.mock;
+package com.example.highload.notification.mock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -12,28 +12,28 @@ import static java.nio.charset.Charset.defaultCharset;
 import static org.springframework.util.StreamUtils.copyToString;
 
 @TestConfiguration
-public class ProfileServiceMock {
-    public static void setupMockGetById(WireMockServer mockService) throws IOException {
-        mockService.stubFor(WireMock.get(WireMock.urlEqualTo("/api/profile/core/single/1"))
+public class LoginServiceMock {
+    public static void setupMockValidateResponse(WireMockServer mockService) throws IOException {
+        mockService.stubFor(WireMock.post(WireMock.urlEqualTo("/api/auth/validate"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                         .withBody(
                                 copyToString(
-                                        ProfileServiceMock.class.getClassLoader().
-                                                getResourceAsStream("payload/profileDto.json"),
+                                        LoginServiceMock.class.getClassLoader().
+                                                getResourceAsStream("payload/validate.txt"),
                                         defaultCharset()))));
     }
 
-    public static void setupMockSetNewMain(WireMockServer mockService) throws IOException {
-        mockService.stubFor(WireMock.post(WireMock.urlEqualTo("/api/profile/core/single/1/image"))
+    public static void setupMockGetLoginResponse(WireMockServer mockService) throws IOException {
+        mockService.stubFor(WireMock.post(WireMock.urlEqualTo("/api/auth/get-login-from-token"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withHeader("Content-Type", String.valueOf(MediaType.TEXT_PLAIN))
                         .withBody(
                                 copyToString(
-                                        ProfileServiceMock.class.getClassLoader().
-                                                getResourceAsStream("payload/imageDto.json"),
+                                        LoginServiceMock.class.getClassLoader().
+                                                getResourceAsStream("payload/getLoginClient.txt"),
                                         defaultCharset()))));
     }
 

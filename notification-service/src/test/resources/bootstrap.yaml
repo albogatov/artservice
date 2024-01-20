@@ -1,4 +1,35 @@
 spring:
+  kafka:
+    template:
+      default-topic=notifications:
+    producer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages=*:
+    consumer:
+      auto-offset-reset: earliest
+      group-id=response:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages=*:
+  r2dbc:
+    url: r2dbc:postgresql://postgres:5432/highload
+    username: high_user
+    password: high_user
+    pool:
+      enabled: true
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
   application:
     name: notification-service
   cloud:
@@ -9,21 +40,11 @@ spring:
         simple:
           instances:
             login-service[0]:
-              uri: http://localhost:80
+              uri: http://localhost:4765
             user-service[0]:
-              uri: http://localhost:81
+              uri: http://localhost:4764
             profile-service[0]:
-              uri: http://localhost:82
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/highload
-    username: high_user
-    password: high_user
-    pool:
-      enabled: true
-  data:
-    r2dbc:
-      repositories:
-        enabled: true
+              uri: http://localhost:4763
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/highload
@@ -36,11 +57,23 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/master-changelog.yaml
     enabled: true
-    drop-first: false
+    drop-first: true
     default-schema: public
 eureka:
   client:
     enabled: false
+admin:
+  login: admin1
+  password: admin1
+  role: ADMIN
+artist:
+  login: artist1
+  password: artist1
+  role: ARTIST
+client:
+  login: client1
+  password: client1
+  role: CLIENT
 jwt:
   secret: "ereboging"
   expired: 84600

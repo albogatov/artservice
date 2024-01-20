@@ -1,0 +1,10 @@
+{
+  "id": 1,
+  "userId": 1,
+  "image": null,
+  "name": "artist1Profile",
+  "experience": "ITMO logo",
+  "education": "ITMO",
+  "about": null,
+  "mail": "artist1@gmail.com"
+}

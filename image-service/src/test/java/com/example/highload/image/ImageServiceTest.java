@@ -127,6 +127,7 @@ public class ImageServiceTest {
     @AfterAll
     static void pgStop() {
         postgreSQLContainer.stop();
+        minIOContainer.stop();
     }
 
     @Test
