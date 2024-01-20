@@ -8,6 +8,34 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        - id: login-openapi
+          uri: lb://user-service
+          predicates:
+            - Path=/login-service/v3/api-docs, /login-service/swagger-ui/**
+        - id: user-openapi
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/v3/api-docs, /user-service/swagger-ui/**
+        - id: admin-openapi
+          uri: lb://admin-service
+          predicates:
+            - Path=/admin-service/v3/api-docs, /admin-service/swagger-ui/**
+        - id: order-openapi
+          uri: lb://order-service
+          predicates:
+            - Path=/order-service/v3/api-docs, /order-service/swagger-ui/**
+        - id: profile-openapi
+          uri: lb://profile-service
+          predicates:
+            - Path=/profile-service/v3/api-docs, /profile-service/swagger-ui/**
+        - id: image-openapi
+          uri: lb://image-service
+          predicates:
+            - Path=/image-service/v3/api-docs, /image-service/swagger-ui/**
+        - id: notification-openapi
+          uri: lb://notification-service
+          predicates:
+            - Path=/notification-service/v3/api-docs, /notification-service/swagger-ui/**
         - id: login-service
           uri: lb://login-service
           predicates:
@@ -40,3 +68,50 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://eureka:8761/eureka/
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    groups:
+      enabled: true
+    enabled: true
+  group-configs:
+    - group: login-service
+      paths-to-match: /api/auth/login, /api/auth/validate, /api/auth/get-login-from-token
+      display-name: login-service
+    - group: admin-service
+      paths-to-match: /api/admin/**
+      display-name: admin-service
+    - group: user-service
+      paths-to-match: /api/user/**
+      display-name: user-service
+    - group: order-service
+      paths-to-match: /api/order/**
+      display-name: order-service
+    - group: profile-service
+      paths-to-match: /api/profile/**
+      display-name: profile-service
+    - group: image-service
+      paths-to-match: /api/image/**
+      display-name: image-service
+    - group: notification-service
+      paths-to-match: /api/notification/**
+      display-name: notification-service
+  swagger-ui:
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    urls:
+      - url: /login-service/v3/api-docs
+        name: login
+      - url: /admin-service/v3/api-docs
+        name: admin
+      - url: /user-service/v3/api-docs
+        name: user-service
+      - url: /order-service/v3/api-docs
+        name: order-service
+      - url: /profile-service/v3/api-docs
+        name: profile-service
+      - url: /image-service/v3/api-docs
+        name: image-service
+      - url: /notification-service/v3/api-docs
+        name: notification-service
