@@ -73,4 +73,8 @@ minio:
   port: 9000
   imageSize: 41943040
   fileSize: 1073741824
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

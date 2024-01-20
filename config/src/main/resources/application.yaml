@@ -1,9 +1,12 @@
 spring:
   profiles:
-    active: native
+    active: git
   cloud:
     config:
       server:
+        git:
+          uri: https://github.com/albogatov/artservice-config.git
+          default-label: main
         native:
           search-locations: classpath:/config
 server:

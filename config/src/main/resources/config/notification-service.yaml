@@ -72,3 +72,8 @@ resilience4j.circuitbreaker:
       waitDurationInOpenState: 10s
       failureRateThreshold: 50
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

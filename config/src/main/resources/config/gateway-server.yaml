@@ -116,3 +116,9 @@ springdoc:
         name: image-service
       - url: /notification-service/v3/api-docs
         name: notification-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
