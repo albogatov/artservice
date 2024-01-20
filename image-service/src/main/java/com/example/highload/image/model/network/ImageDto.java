@@ -11,6 +11,5 @@ public class ImageDto implements Serializable {
 
     private int id;
     private String url;
-    private MultipartFile image;
 
 }

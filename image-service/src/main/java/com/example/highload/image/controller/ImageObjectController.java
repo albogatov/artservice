@@ -3,6 +3,7 @@ package com.example.highload.image.controller;
 import com.example.highload.image.feign.UserServiceFeignClient;
 import com.example.highload.image.mapper.ImageMapper;
 import com.example.highload.image.model.inner.Image;
+import com.example.highload.image.model.inner.ImageWithFile;
 import com.example.highload.image.model.network.ImageDto;
 import com.example.highload.image.services.ImageService;
 import com.example.highload.image.utils.PaginationHeadersCreator;
@@ -63,11 +64,11 @@ public class ImageObjectController {
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
     public ResponseEntity<?> addImagesToOrder(@RequestParam("files") List<MultipartFile> file, @PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
-        List<ImageDto> images = new ArrayList<>();
+        List<ImageWithFile> images = new ArrayList<>();
         for (int i = 0; i < file.size(); i++) {
-            ImageDto imageDto = new ImageDto();
-            imageDto.setImage(file.get(i));
-            images.add(imageDto);
+            ImageWithFile imageWithFile = new ImageWithFile();
+            imageWithFile.setImage(file.get(i));
+            images.add(imageWithFile);
         }
         imageService.saveImagesForOrder(images, orderId, token);
         return ResponseEntity.ok("Images added");
@@ -114,11 +115,11 @@ public class ImageObjectController {
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
     public ResponseEntity<?> addImagesToProfile(@RequestParam("files") List<MultipartFile> file, @RequestHeader(value = "Authorization") String token) {
-        List<ImageDto> images = new ArrayList<>();
+        List<ImageWithFile> images = new ArrayList<>();
         for (int i = 0; i < file.size(); i++) {
-            ImageDto imageDto = new ImageDto();
-            imageDto.setImage(file.get(i));
-            images.add(imageDto);
+            ImageWithFile imageWithFile = new ImageWithFile();
+            imageWithFile.setImage(file.get(i));
+            images.add(imageWithFile);
         }
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         int profileId = userService.findByLoginElseNull(login, token).getBody().getProfileId();
@@ -144,11 +145,11 @@ public class ImageObjectController {
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
     public ResponseEntity<?> changeMainImageOfProfile(@RequestParam("file") MultipartFile file, @RequestHeader(value = "Authorization") String token) {
-        ImageDto imageDto = new ImageDto();
-        imageDto.setImage(file);
+        ImageWithFile imageWithFile = new ImageWithFile();
+        imageWithFile.setImage(file);
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         int profileId = userService.findByLoginElseNull(login, token).getBody().getProfileId();
-        imageService.changeMainImageOfProfile(imageDto, profileId, token);
+        imageService.changeMainImageOfProfile(imageWithFile, profileId, token);
         return ResponseEntity.ok("Main image changed");
     }
 

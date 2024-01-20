@@ -1,6 +1,7 @@
 package com.example.highload.image.services;
 
 import com.example.highload.image.model.inner.Image;
+import com.example.highload.image.model.inner.ImageWithFile;
 import com.example.highload.image.model.network.ImageDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +14,11 @@ public interface ImageService {
 
     Page<Image> findAllOrderImages(int orderId, Pageable pageable);
 
-    Image saveImage(ImageDto imageDto);
+//    Image saveImage(ImageDto imageDto);
 
-    List<Image> saveImagesForOrder(List<ImageDto> imageDtos, int orderId, String token);
+    List<Image> saveImagesForOrder(List<ImageWithFile> imageDtos, int orderId, String token);
 
-    List<Image> saveImageForProfile(List<ImageDto> imageDtos, int profileId, String token);
+    List<Image> saveImageForProfile(List<ImageWithFile> imageDtos, int profileId, String token);
 
     void removeImageForOrder(int imageId, int orderId);
 
@@ -29,6 +30,6 @@ public interface ImageService {
 
     void removeImageForProfile(int imageId, int profileId);
 
-    Image changeMainImageOfProfile(ImageDto imageDto, int profileId, String token);
+    Image changeMainImageOfProfile(ImageWithFile imageDto, int profileId, String token);
 
 }
