@@ -1,8 +1,8 @@
-### Custom Made Art Service
+## Custom Made Art Service
 
 Built using microservice architecture.
 
-## Used technologies:
+### Used technologies:
 * Spring Boot
 * Spring WebFlux
 * Project Reactor
@@ -14,13 +14,13 @@ Built using microservice architecture.
 * MinIO
 * Websockets
   
-## Used for testing:
+### Used for testing:
 * JUnit 5
 * Mockito
 * Testcontainers
 * RestAssured
 * WireMock
 
-## Documented with OpenAPI 3
+### Documented with OpenAPI 3
 
-## Implemented CI/CD, deployment to YC
+### Implemented CI/CD, deployment to YC
