@@ -18,6 +18,9 @@ spring:
     enabled: true
     drop-first: false
     default-schema: public
+eureka:
+  client:
+    enabled: false
 admin:
   login: admin1
   password: admin1

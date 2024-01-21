@@ -22,3 +22,6 @@ client:
   login: client1
   password: client1
   role: CLIENT
+eureka:
+  client:
+    enabled: false
