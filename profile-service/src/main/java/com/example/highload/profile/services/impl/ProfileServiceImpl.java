@@ -61,6 +61,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.findById(profileId).orElseThrow();
         Image oldImage = profile.getImage();
         profile.setImage(newImage);
+        profileRepository.save(profile);
         return oldImage;
     }
 }

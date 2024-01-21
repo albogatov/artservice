@@ -162,14 +162,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = {NoSuchElementException.class, Exception.class})
     public Image changeMainImageOfProfile(ImageWithFile imageDto, int profileId, String token) {
         String uuid = UUID.randomUUID().toString();
         minioUtil.putObject(minioConfig.getDefaultBucketName(), imageDto.getImage(),
                 uuid + '/' + imageDto.getImage().getOriginalFilename(), FileTypeUtils.getFileType(imageDto.getImage()));
         imageDto.setUrl(uuid + '/' + imageDto.getImage().getOriginalFilename());
         Image newImage = imageRepository.save(imageWithFileMapper.imageWithFileToImage(imageDto));
-        Image oldImage = imageMapper.imageDtoToImage(profileService.setNewMainImage(profileId, imageWithFileMapper.imageWithFileToImageDto(imageDto), token).getBody());
+        Image oldImage = imageMapper.imageDtoToImage(profileService.setNewMainImage(profileId, imageMapper.imageToDto(newImage), token).getBody());
         if (oldImage != null) {
             minioUtil.removeObject(minioConfig.getDefaultBucketName(), oldImage.getUrl());
             imageRepository.deleteById(oldImage.getId());

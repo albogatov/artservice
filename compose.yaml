@@ -179,6 +179,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8185:8185"
+      - "6005:6005"
     depends_on:
       - login-service
       - user-service
@@ -216,6 +217,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8186:8186"
+      - "7005:7005"
     depends_on:
       - login-service
       - user-service
