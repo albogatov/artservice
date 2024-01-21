@@ -14,6 +14,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+  liquibase:
+    enabled: false
 eureka:
   client:
     serviceUrl:

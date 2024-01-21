@@ -117,8 +117,13 @@ public class ReviewController {
         return ResponseEntity.badRequest().body("Wrong ids in path!");
     }
 
-    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
+    @ExceptionHandler({CallNotPermittedException.class})
     public ResponseEntity<?> handleExternalServiceExceptions() {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
+    }
+
+    @ExceptionHandler({FeignException.class})
+    public ResponseEntity<?> handleUnexpectedServiceExceptions() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Couldn't make call for external service");
     }
 }

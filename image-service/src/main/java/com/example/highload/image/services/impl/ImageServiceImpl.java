@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class ImageServiceImpl implements ImageService {
     private final OrderMapper orderMapper;
     private final ProfileMapper profileMapper;
     private final ImageWithFileMapper imageWithFileMapper;
-    private SimpMessagingTemplate brokerMessagingTemplate;
+    private final SimpMessageSendingOperations messagingTemplate;
 
     @Override
     public Page<Image> findAllProfileImages(int profileId, Pageable pageable) {
@@ -74,11 +75,11 @@ public class ImageServiceImpl implements ImageService {
             minioUtil.putObject(minioConfig.getDefaultBucketName(), imageDto.getImage(),
                     uuid + '/' + imageDto.getImage().getOriginalFilename(), FileTypeUtils.getFileType(imageDto.getImage()));
             imageDto.setUrl(uuid + '/' + imageDto.getImage().getOriginalFilename());
-            brokerMessagingTemplate.convertAndSend("/topics/event", "Image " + imageDto.getImage().getOriginalFilename() + " is saved on server");
         });
         List<Image> images = imageRepository.saveAll(imageDtos.stream().map(imageWithFileMapper::imageWithFileToImage).toList());
         List<ImageObject> imageObjects = images.stream().map(image ->
                 {
+                    messagingTemplate.convertAndSend("/topics/images/order/" + orderId, imageMapper.imageToDto(image));
                     ImageObject imageObject = new ImageObject();
                     imageObject.setImage(image);
                     imageObject.setOrder(order);
@@ -100,11 +101,11 @@ public class ImageServiceImpl implements ImageService {
             minioUtil.putObject(minioConfig.getDefaultBucketName(), imageDto.getImage(),
                     uuid + '/' + imageDto.getImage().getOriginalFilename(), FileTypeUtils.getFileType(imageDto.getImage()));
             imageDto.setUrl(uuid + '/' + imageDto.getImage().getOriginalFilename());
-            brokerMessagingTemplate.convertAndSend("/topics/event", "Image " + imageDto.getImage().getOriginalFilename() + " is saved on server");
         });
         List<Image> images = imageRepository.saveAll(imageDtos.stream().map(imageWithFileMapper::imageWithFileToImage).toList());
         List<ImageObject> imageObjects = images.stream().map(image ->
                 {
+                    messagingTemplate.convertAndSend("/topics/images/profile/" + profileId, imageMapper.imageToDto(image));
                     ImageObject imageObject = new ImageObject();
                     imageObject.setImage(image);
                     imageObject.setOrder(null);

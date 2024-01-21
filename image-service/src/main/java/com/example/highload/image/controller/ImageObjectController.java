@@ -29,6 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -275,9 +276,18 @@ public class ImageObjectController {
         return ResponseEntity.badRequest().body("Wrong ids in path!");
     }
 
-    @ExceptionHandler({CallNotPermittedException.class, FeignException.class})
+    @ExceptionHandler({CallNotPermittedException.class})
     public ResponseEntity<?> handleExternalServiceExceptions() {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("External service is unavailable now!");
     }
 
+    @ExceptionHandler({FeignException.class})
+    public ResponseEntity<?> handleUnexpectedServiceExceptions() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Couldn't make call for external service");
+    }
+
+    @ExceptionHandler({MultipartException.class})
+    public ResponseEntity<?> handleMultipartExceptions() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong request data - a file is required!");
+    }
 }

@@ -32,7 +32,6 @@ public class JwtFilter extends GenericFilterBean {
     private static final String AUTHORIZATION = "Authorization";
     private final AdminUserService userService;
     private final LoginServiceFeignClient loginServiceFeignClient;
-    private final CircuitBreaker circuitBreaker;
 
     @Value("${jwt.secret}")
     private String jwtSecret;

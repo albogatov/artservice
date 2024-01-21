@@ -48,7 +48,9 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/error/**",
             "/favicon.ico",
-            "/error"
+            "/error",
+            "/websocket",
+            "/websocket/**"
     };
 
     @Bean
