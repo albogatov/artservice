@@ -114,8 +114,8 @@ public class NotificationServiceTest {
     @BeforeAll
     static void pgStart() {
         postgreSQLContainer.start();
-        kafka.withEmbeddedZookeeper()
-                .start();
+//        kafka.withEmbeddedZookeeper()
+//                .start();
     }
 
     @BeforeEach
@@ -131,7 +131,7 @@ public class NotificationServiceTest {
     @AfterAll
     static void pgStop() {
         postgreSQLContainer.stop();
-        kafka.stop();
+//        kafka.stop();
     }
 
     @Test
