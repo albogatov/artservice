@@ -9,6 +9,7 @@ import com.example.highload.image.services.ImageService;
 import com.example.highload.image.utils.PaginationHeadersCreator;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,7 +49,7 @@ public class ImageObjectController {
     private final PaginationHeadersCreator paginationHeadersCreator;
 
     @PreAuthorize("hasAuthority('CLIENT')")
-    @PostMapping("/add/order/{orderId}")
+    @PostMapping(path = "/add/order/{orderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Add images for order",
             security = { @SecurityRequirement(name = "bearer-key")})
     @ApiResponses(value = {
@@ -64,7 +66,8 @@ public class ImageObjectController {
             @ApiResponse(responseCode = "403", description = "No authority for this operations"),
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
-    public ResponseEntity<?> addImagesToOrder(@RequestParam("files") List<MultipartFile> file, @PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<?> addImagesToOrder(@Parameter(description = "Upload an image or multiple images", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                  @RequestParam("files") List<MultipartFile> file, @PathVariable int orderId, @RequestHeader(value = "Authorization") String token) {
         List<ImageWithFile> images = new ArrayList<>();
         for (int i = 0; i < file.size(); i++) {
             ImageWithFile imageWithFile = new ImageWithFile();
@@ -98,7 +101,7 @@ public class ImageObjectController {
     }
 
     @PreAuthorize("hasAuthority('ARTIST')")
-    @PostMapping("/add/profile")
+    @PostMapping(path = "/add/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Add images for profile",
             security = { @SecurityRequirement(name = "bearer-key")})
     @ApiResponses(value = {
@@ -115,7 +118,8 @@ public class ImageObjectController {
             @ApiResponse(responseCode = "403", description = "No authority for this operations"),
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
-    public ResponseEntity<?> addImagesToProfile(@RequestParam("files") List<MultipartFile> file, @RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<?> addImagesToProfile(@Parameter(description = "Upload an image or multiple images", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                    @RequestParam("files") List<MultipartFile> file, @RequestHeader(value = "Authorization") String token) {
         List<ImageWithFile> images = new ArrayList<>();
         for (int i = 0; i < file.size(); i++) {
             ImageWithFile imageWithFile = new ImageWithFile();
@@ -128,7 +132,7 @@ public class ImageObjectController {
         return ResponseEntity.ok("Images added");
     }
 
-    @PostMapping("/change/profile")
+    @PostMapping(path = "/change/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Change profile image",
             security = { @SecurityRequirement(name = "bearer-key")})
     @ApiResponses(value = {
@@ -145,7 +149,8 @@ public class ImageObjectController {
             @ApiResponse(responseCode = "403", description = "No authority for this operations"),
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
-    public ResponseEntity<?> changeMainImageOfProfile(@RequestParam("file") MultipartFile file, @RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<?> changeMainImageOfProfile(@Parameter(description = "Upload an image", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                          @RequestParam("file") MultipartFile file, @RequestHeader(value = "Authorization") String token) {
         ImageWithFile imageWithFile = new ImageWithFile();
         imageWithFile.setImage(file);
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
