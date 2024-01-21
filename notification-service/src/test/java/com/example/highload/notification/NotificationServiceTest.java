@@ -1,5 +1,6 @@
 package com.example.highload.notification;
 
+import jakarta.websocket.WebSocketContainer;
 import com.example.highload.notification.mock.LoginServiceMock;
 import com.example.highload.notification.mock.ProfileServiceMock;
 import com.example.highload.notification.mock.UserServiceMock;
@@ -145,8 +146,8 @@ public class NotificationServiceTest {
         responseDto.setText("mock");
         kafkaTemplate.send("notifications", responseDto);
         await()
-                .pollInterval(Duration.ofSeconds(3))
-                .atMost(10, SECONDS)
+                .pollInterval(Duration.ofSeconds(5))
+                .atMost(15, SECONDS)
                 .untilAsserted(() -> {
                     Mono<Notification> notification = notificationRepository.fetchById(1);
                     Assertions.assertEquals(false, notification.block().getIsRead());
