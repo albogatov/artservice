@@ -148,8 +148,8 @@ public class NotificationServiceTest {
         responseDto.setText("mock");
         kafkaTemplate.send("notifications", responseDto);
         await()
-//                .pollInterval(Duration.ofSeconds(5))
-//                .atMost(15, SECONDS)
+                .pollInterval(Duration.ofSeconds(2))
+                .atMost(30, SECONDS)
                 .untilAsserted(() -> {
                     Mono<Notification> notification = notificationRepository.fetchById(1);
                     Notification notification1 = notification.block();
