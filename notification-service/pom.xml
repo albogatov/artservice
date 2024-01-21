@@ -210,7 +210,6 @@
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-websocket</artifactId>
             <version>10.1.15</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
