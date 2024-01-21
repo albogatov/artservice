@@ -200,7 +200,6 @@ public class UserServiceTest {
         );
     }
 
-    //TODO: Fix
     @Test
     @Order(1)
     public void deleteUser() {

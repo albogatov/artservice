@@ -45,15 +45,6 @@ public class User implements UserDetails {
     @Column(name = "when_deleted_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime whenDeletedTime;
 
-    // TODO Think about what to do here
-//    @OneToMany(mappedBy = "user")
-//    private List<Response> responses;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<ClientOrder> orders;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Review> reviews;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -51,7 +51,6 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.fetchAllNotReadByReceiverProfileId(userId);
     }
 
-    //TODO Sender mail = null
     @KafkaListener(topics = "notifications", groupId = "response")
     @Override
     public void sendNotification(ResponseDto responseDto) {

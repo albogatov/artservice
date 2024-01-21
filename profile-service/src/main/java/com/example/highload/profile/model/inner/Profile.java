@@ -43,16 +43,6 @@ public class Profile {
     @Column(name = "mail", nullable = false)
     private String mail;
 
-//    // TODO What here?
-//    @OneToMany(mappedBy = "profile", fetch = FetchType.EAGER)
-//    private List<ImageObject> images;
-//
-//    @OneToMany(mappedBy = "receiverProfile")
-//    private List<Notification> receivedNotifications;
-//
-//    @OneToMany(mappedBy = "senderProfile")
-//    private List<Notification> sentNotifications;
-
     @Override
     public String toString() {
         return "";
