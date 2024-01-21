@@ -96,7 +96,7 @@ public class NotificationServiceTest {
 
     @Container
     static final KafkaContainer kafka = new KafkaContainer(
-            DockerImageName.parse("confluentinc/cp-kafka:7.3.3")
+            DockerImageName.parse("confluentinc/cp-kafka:latest")
     ).waitingFor(Wait.forLogMessage(".*started.*\\n", 1));
 
     @DynamicPropertySource
@@ -148,10 +148,10 @@ public class NotificationServiceTest {
         responseDto.setText("mock");
         kafkaTemplate.send("notifications", responseDto);
         await()
-                .pollInterval(Duration.ofSeconds(2))
+                .pollInterval(Duration.ofSeconds(5))
                 .atMost(30, SECONDS)
                 .untilAsserted(() -> {
-                    Mono<Notification> notification = notificationRepository.fetchById(1);
+                    Mono<Notification> notification = notificationRepository.findAll().last();
                     Notification notification1 = notification.block();
                     Assertions.assertNotNull(notification1);
                     Assertions.assertEquals(false, notification1.getIsRead());

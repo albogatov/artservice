@@ -32,12 +32,12 @@
     </dependencyManagement>
 
     <modules>
+        <module>notification-service</module>
         <module>config</module>
         <module>user-service</module>
         <module>eureka-server</module>
         <module>admin-service</module>
         <module>login-service</module>
-        <module>notification-service</module>
         <module>image-service</module>
         <module>order-service</module>
         <module>profile-service</module>
