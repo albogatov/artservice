@@ -35,6 +35,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -96,7 +97,7 @@ public class NotificationServiceTest {
     @Container
     static final KafkaContainer kafka = new KafkaContainer(
             DockerImageName.parse("confluentinc/cp-kafka:7.3.3")
-    );
+    ).waitingFor(Wait.forLogMessage(".*started.*\\n", 1));
 
     @DynamicPropertySource
     static void postgresqlProperties(DynamicPropertyRegistry registry) {
@@ -113,7 +114,8 @@ public class NotificationServiceTest {
     @BeforeAll
     static void pgStart() {
         postgreSQLContainer.start();
-        kafka.start();
+        kafka.withEmbeddedZookeeper()
+                .start();
     }
 
     @BeforeEach
