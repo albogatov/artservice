@@ -667,6 +667,29 @@ databaseChangeLog:
               - column:
                   name: name
                   value: Alex
+  - changeSet:
+      id: 19
+      author: abogatov
+      changes:
+        - insert:
+            schemaName: public
+            tableName: notification
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: sender_profile_id
+                  value: 1
+              - column:
+                  name: receiver_profile_id
+                  value: 1
+              - column:
+                  name: is_read
+                  value: false
+              - column:
+                  name: time
+                  value: 2024-01-21T05:47:08.644
 
 
 #            insert into public.user(login, hash_password, role_id, is_actual)
