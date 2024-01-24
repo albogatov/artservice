@@ -68,7 +68,7 @@ public class NotificationController {
                             array = @ArraySchema(schema = @Schema(implementation = NotificationDto.class))
                     )
             }),
-            @ApiResponse(responseCode = "400", description = "Request data incorrect"),
+            @ApiResponse(responseCode = "400", description = "Данные запроса некорректные"),
             @ApiResponse(responseCode = "403", description = "No authority for this operations"),
             @ApiResponse(responseCode = "401", description = "Unauthorized request")
     })
